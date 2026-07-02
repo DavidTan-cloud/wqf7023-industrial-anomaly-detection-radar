@@ -1,0 +1,118 @@
+import pandas as pd
+import numpy as np
+import torch
+
+from src.datasets.smap_loader import SMAPLoader
+from src.datasets.label_builder import build_labels
+
+from src.preprocessing.windowing import create_windows
+from src.preprocessing.label_windowing import create_window_labels
+from src.preprocessing.normalization import DataNormalizer
+
+from src.models.lstm_ae import LSTMAE
+
+from src.evaluation.metrics import evaluate
+from src.evaluation.thresholding import percentile_threshold
+
+loader = SMAPLoader(
+    train_dir="data/train",
+    test_dir="data/test",
+    labels_file="labeled_anomalies.xlsx"
+)
+
+metadata = loader.load_metadata()
+
+channels = loader.get_channels()
+
+results = []
+
+WINDOW_SIZE = 100
+
+for channel in channels:
+
+    try:
+        channel_id = channel.replace(
+            ".npy",
+            ""
+        )
+
+        row = metadata[
+            metadata["chan_id"]
+            == channel_id
+        ].iloc[0]
+
+        train, test = loader.load_channel(
+            channel
+        )
+
+        anomaly_sequence = row[
+            "anomaly_sequences"
+        ]
+
+        labels = build_labels(
+            anomaly_sequence,
+            len(test)
+        )
+
+        scaler = DataNormalizer()
+
+        train = scaler.fit_transform(train)
+        test = scaler.transform(test)
+
+        X_train = create_windows(
+            train,
+            WINDOW_SIZE
+        )
+
+        X_test = create_windows(
+            test,
+            WINDOW_SIZE
+        )
+
+        y_test = create_window_labels(
+            labels,
+            WINDOW_SIZE
+        )
+
+        X_train_t = torch.FloatTensor(
+            X_train
+        )
+
+        X_test_t = torch.FloatTensor(
+            X_test
+        )
+
+        model = LSTMAE(
+            input_dim=X_train.shape[-1]
+        )
+
+        optimizer = torch.optim.Adam(
+            model.parameters(),
+            lr=0.001
+        )
+
+        criterion = torch.nn.MSELoss()
+
+        for epoch in range(10):
+            optimizer.zero_grad()
+            output = model(X_train_t)
+
+            loss = criterion(output, X_train_t)
+
+            loss.backward()
+            optimizer.step()
+
+        with torch.no_grad():
+            reconstruction = model(X_test_t)
+            scores = ((X_test_t - reconstruction) ** 2).mean(dim=(1,2)).numpy()
+
+        threshold = percentile_threshold(scores, percentile=95)
+        preds = (scores > threshold).astype(int)
+        metrics = evaluate(y_test, preds, scores)
+
+        metrics["Channel"] = channel_id
+        results.append(metrics)
+        print(f"Completed {channel_id}")
+
+    except Exception as e:
+        print(channel, e)
