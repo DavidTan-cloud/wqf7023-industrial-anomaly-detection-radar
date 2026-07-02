@@ -11,7 +11,6 @@ import pandas as pd
 
 class SMAPLoader:
 
-    
 def __init__(
         self,
         train_dir,
@@ -22,10 +21,16 @@ def __init__(
         self.test_dir = test_dir
         self.labels_file = labels_file
 
-    def get_channels(self):
-        return sorted(os.listdir(self.train_dir))
+    
+def get_channels(self):
+        files = sorted(os.listdir(self.train_dir))
 
-    def load_channel(self, channel):
+        return [
+            f for f in files
+            if f.endswith(".npy")
+        ]
+
+def load_channel(self, channel):
         train = np.load(
             os.path.join(
                 self.train_dir,
@@ -39,9 +44,10 @@ def __init__(
                 channel
             )
         )
+
         return train, test
 
-    def load_labels(self):
+    def load_metadata(self):
         return pd.read_excel(
             self.labels_file
         )
