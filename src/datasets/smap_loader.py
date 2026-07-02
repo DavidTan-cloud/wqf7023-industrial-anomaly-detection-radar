@@ -5,36 +5,43 @@ Author: David Tan
 Loads NASA SMAP telemetry dataset and prepares
 train/test splits for anomaly detection.
 """
-import pandas as pd
+import os
 import numpy as np
+import pandas as pd
 
 class SMAPLoader:
 
-    def __init__(self,
-                 train_path,
-                 test_path,
-                 label_path=None):
+    
+def __init__(
+        self,
+        train_dir,
+        test_dir,
+        labels_file
+    ):
+        self.train_dir = train_dir
+        self.test_dir = test_dir
+        self.labels_file = labels_file
 
-        self.train_path = train_path
-        self.test_path = test_path
-        self.label_path = label_path
+    def get_channels(self):
+        return sorted(os.listdir(self.train_dir))
 
-    def load(self):
+    def load_channel(self, channel):
+        train = np.load(
+            os.path.join(
+                self.train_dir,
+                channel
+            )
+        )
 
-        train_df = pd.read_csv(self.train_path)
-        test_df = pd.read_csv(self.test_path)
-        labels = None
+        test = np.load(
+            os.path.join(
+                self.test_dir,
+                channel
+            )
+        )
+        return train, test
 
-        if self.label_path is not None:
-            labels = pd.read_csv(self.label_path)
-
-        return train_df, test_df, labels
-
-    def summary(self, df):
-
-        print("Shape:", df.shape)
-        print("\nColumns:")
-        print(df.columns.tolist())
-
-        print("\nMissing Values:")
-        print(df.isnull().sum())
+    def load_labels(self):
+        return pd.read_excel(
+            self.labels_file
+        )
