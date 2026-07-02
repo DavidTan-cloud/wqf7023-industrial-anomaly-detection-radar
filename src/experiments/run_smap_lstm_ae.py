@@ -116,3 +116,36 @@ for channel in channels:
 
     except Exception as e:
         print(channel, e)
+
+
+results_df = pd.DataFrame(results)
+
+results_df = results_df[
+    [
+        "Channel",
+        "Accuracy",
+        "Precision",
+        "Recall",
+        "F1",
+        "AUC"
+    ]
+]
+
+results_df.to_csv(
+    "smap_lstm_ae_results.csv",
+    index=False
+)
+
+results_df.head()
+
+results_df.describe()
+
+print(
+    "Average F1:",
+    results_df["F1"].mean()
+)
+
+print(
+    "Average AUC:",
+    results_df["AUC"].mean()
+)
