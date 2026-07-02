@@ -1,13 +1,13 @@
 import numpy as np
 import ast
 
-def create_labels(
+def build_labels(
     anomaly_sequence,
-    sequence_length
+    length
 ):
 
     labels = np.zeros(
-        sequence_length,
+        length,
         dtype=int
     )
 
