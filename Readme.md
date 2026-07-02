@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository contains the implementation of an AI-based anomaly detection framework for industrial time-series data using the S-RADAR framework.
+This repository contains the implementation of an AI-based anomaly detection framework for industrial time-series data based on the S-RADAR framework.
 
 ### Datasets
 - MIMII
@@ -17,7 +17,7 @@ This repository contains the implementation of an AI-based anomaly detection fra
 - SMDA-Net
 
 ### Framework
-- S-RADAR
+- Based on S-RADAR
 
 ### Evaluation Metrics
 - Precision
