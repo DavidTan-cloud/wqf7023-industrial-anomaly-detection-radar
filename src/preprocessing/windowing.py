@@ -1,6 +1,6 @@
 import numpy as np
 
-def create_windows(data, window_size=100):
+def create_windows(data, window_size):
     windows = []
     for i in range(len(data) - window_size):
         windows.append(
