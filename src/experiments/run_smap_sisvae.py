@@ -21,7 +21,7 @@ from src.preprocessing.windowing import create_windows
 from src.preprocessing.label_windowing import create_window_labels
 from src.preprocessing.normalization import DataNormalizer
 
-from src.models.lstm_ae import LSTMAE
+from src.models.sisvae import SISVAE
 
 from src.evaluation.metrics import evaluate
 from src.evaluation.thresholding import percentile_threshold
@@ -37,7 +37,7 @@ metadata = loader.load_metadata()
 channels = loader.get_channels()
 
 #Test Mode
-#channels = channels[:3]
+channels = channels[:3]
 
 results = []
 
@@ -108,29 +108,60 @@ for channel in channels:
             X_test
         )
 
-        model = LSTMAE(
-            input_dim=X_train.shape[-1]
-        )
+        model = SISVAE(
+            input_dim=X_train.shape[-1],
+            latent_dim=16
+        ).to(device)
 
+        
+        def vae_loss(recon_x, x, mu, logvar):
+            recon_loss = nn.functional.mse_loss(recon_x, x, reduction="mean")
+            kl_loss = -0.5 * torch.mean(
+                1 + logvar - mu.pow(2) - logvar.exp()
+            )
+        return recon_loss + kl_loss
+
+        
         optimizer = torch.optim.Adam(
             model.parameters(),
             lr=0.001
         )
 
-        criterion = torch.nn.MSELoss()
+        EPOCHS = 20
 
-        for epoch in range(10):
+        for epoch in range(EPOCHS):
+            
             optimizer.zero_grad()
-            output = model(X_train_t)
 
-            loss = criterion(output, X_train_t)
+            recon, mu, logvar = model(X_train_t)
+
+            loss = vae_loss(recon, X_train_t, mu, logvar)
 
             loss.backward()
             optimizer.step()
 
+            if (epoch + 1) % 5 == 0:
+                print(
+                    f"{channel_id} | "
+                    f"Epoch {epoch+1} | "
+                    f"Loss={loss.item():.6f}"
+                )
+ 
         with torch.no_grad():
-            reconstruction = model(X_test_t)
-            scores = ((X_test_t - reconstruction) ** 2).mean(dim=(1,2)).numpy()
+
+            recon, mu, logvar = model(X_test_t)
+
+            recon_error = (
+                (X_test_t - recon) ** 2
+            ).mean(dim=(1,2))
+
+            kl_div = -0.5 * torch.sum(
+                1 + logvar - mu.pow(2) - logvar.exp(),
+                dim=1
+            )
+
+            scores = (recon_error + kl_div).cpu().numpy()
+
 
         threshold = percentile_threshold(scores, percentile=95)
         preds = (scores > threshold).astype(int)
@@ -140,7 +171,7 @@ for channel in channels:
         results.append(metrics)
         
         pd.DataFrame(results).to_csv(
-            "results/smap_lstm_ae_partial.csv",
+            "results/smap_sisvae_partial.csv",
             index=False
         )
         
@@ -164,7 +195,7 @@ results_df = results_df[
 ]
 
 results_df.to_csv(
-    "smap_lstm_ae_results.csv",
+    "smap_sisvae_results.csv",
     index=False
 )
 
