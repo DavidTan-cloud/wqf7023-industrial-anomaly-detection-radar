@@ -44,7 +44,7 @@ metadata = loader.load_metadata()
 channels = loader.get_channels()
 
 #Test Mode
-channels = channels[:3]
+#channels = channels[:3]
 
 results = []
 
