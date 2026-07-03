@@ -21,7 +21,7 @@ from src.preprocessing.windowing import create_windows
 from src.preprocessing.label_windowing import create_window_labels
 from src.preprocessing.normalization import DataNormalizer
 
-from src.models.lstm_ae import LSTMAE
+from src.models.ladop import LADOP
 
 from src.evaluation.metrics import evaluate
 from src.evaluation.thresholding import percentile_threshold
@@ -37,7 +37,7 @@ metadata = loader.load_metadata()
 channels = loader.get_channels()
 
 #Test Mode
-#channels = channels[:3]
+channels = channels[:3]
 
 results = []
 
@@ -108,9 +108,9 @@ for channel in channels:
             X_test
         )
 
-        model = LSTMAE(
-            input_dim=X_train.shape[-1]
-        )
+        model = LADOP()
+
+        model.fit(X_train)
 
         optimizer = torch.optim.Adam(
             model.parameters(),
@@ -128,9 +128,7 @@ for channel in channels:
             loss.backward()
             optimizer.step()
 
-        with torch.no_grad():
-            reconstruction = model(X_test_t)
-            scores = ((X_test_t - reconstruction) ** 2).mean(dim=(1,2)).numpy()
+        scores = model.score(X_test)
 
         threshold = percentile_threshold(scores, percentile=95)
         preds = (scores > threshold).astype(int)
@@ -140,7 +138,7 @@ for channel in channels:
         results.append(metrics)
         
         pd.DataFrame(results).to_csv(
-            "results/smap_lstm_ae_partial.csv",
+            "results/smap_ladop_partial.csv",
             index=False
         )
         
@@ -164,7 +162,7 @@ results_df = results_df[
 ]
 
 results_df.to_csv(
-    "smap_lstm_ae_results.csv",
+    "smap_ladop_results.csv",
     index=False
 )
 
@@ -173,11 +171,11 @@ results_df.head()
 results_df.describe()
 
 print(
-    "Average F1:",
+    "LADOP Average F1:",
     results_df["F1"].mean()
 )
 
 print(
-    "Average AUC:",
+    "LADOP Average AUC:",
     results_df["AUC"].mean()
 )
