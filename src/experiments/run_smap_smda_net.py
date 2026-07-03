@@ -48,7 +48,7 @@ channels = channels[:3]
 
 results = []
 
-WINDOW_SIZE = 100
+WINDOW_SIZE = 50
 
 for channel in channels:
 
@@ -170,8 +170,17 @@ for channel in channels:
         
         print(f"Completed {channel_id}")
 
+        # Free GPU memory
+        del model
+        del X_train_t
+        del X_test_t
+        torch.cuda.empty_cache()
+
     except Exception as e:
         print(channel, e)
+        
+        # Also free memory if an error occurs
+        torch.cuda.empty_cache()
 
 
 results_df = pd.DataFrame(results)
