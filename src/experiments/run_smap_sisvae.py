@@ -44,7 +44,7 @@ metadata = loader.load_metadata()
 channels = loader.get_channels()
 
 #Test Mode
-channels = channels[:3]
+#channels = channels[:3]
 
 results = []
 
@@ -109,17 +109,16 @@ for channel in channels:
 
         X_train_t = torch.FloatTensor(
             X_train
-        )
+        ).to(device)
 
         X_test_t = torch.FloatTensor(
             X_test
-        )
+        ).to(device)
 
         model = SISVAE(
             input_dim=X_train.shape[-1],
             latent_dim=16
         ).to(device)
-
         
         def vae_loss(recon_x, x, mu, logvar):
             recon_loss = nn.functional.mse_loss(recon_x, x, reduction="mean")
@@ -167,7 +166,7 @@ for channel in channels:
                 dim=1
             )
 
-            scores = (recon_error + kl_div).cpu().numpy()
+            scores = (recon_error + kl_div).detach().cpu().numpy()
 
 
         threshold = percentile_threshold(scores, percentile=95)
