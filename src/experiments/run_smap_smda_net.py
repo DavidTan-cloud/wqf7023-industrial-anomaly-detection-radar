@@ -28,7 +28,7 @@ from src.preprocessing.windowing import create_windows
 from src.preprocessing.label_windowing import create_window_labels
 from src.preprocessing.normalization import DataNormalizer
 
-from src.models.sisvae import SISVAE
+from src.models.smda_net import SMDANet
 
 from src.evaluation.metrics import evaluate
 from src.evaluation.thresholding import percentile_threshold
@@ -44,7 +44,7 @@ metadata = loader.load_metadata()
 channels = loader.get_channels()
 
 #Test Mode
-#channels = channels[:3]
+channels = channels[:3]
 
 results = []
 
@@ -115,59 +115,46 @@ for channel in channels:
             X_test
         ).to(device)
 
-        model = SISVAE(
-            input_dim=X_train.shape[-1],
-            latent_dim=16
+        model = SMDANet(
+            input_dim=X_train.shape[-1]
         ).to(device)
         
-        def vae_loss(recon_x, x, mu, logvar):
-            recon_loss = nn.functional.mse_loss(recon_x, x, reduction="mean")
-            kl_loss = -0.5 * torch.mean(
-                1 + logvar - mu.pow(2) - logvar.exp()
-            )
-            return recon_loss + kl_loss
+        criterion = nn.MSELoss()
 
-        
         optimizer = torch.optim.Adam(
             model.parameters(),
             lr=0.001
         )
 
+        
         EPOCHS = 20
 
         for epoch in range(EPOCHS):
-            
             optimizer.zero_grad()
+            reconstruction = model(
+                X_train_t
+            )
 
-            recon, mu, logvar = model(X_train_t)
-
-            loss = vae_loss(recon, X_train_t, mu, logvar)
+            loss = criterion(
+                reconstruction,
+                X_train_t
+            )
 
             loss.backward()
             optimizer.step()
 
             if (epoch + 1) % 5 == 0:
                 print(
-                    f"{channel_id} | "
-                    f"Epoch {epoch+1} | "
-                    f"Loss={loss.item():.6f}"
+                    f"{channel_id}"
+                    f" | Epoch {epoch+1}"
+                    f" | Loss={loss.item():.6f}"
                 )
- 
+
         with torch.no_grad():
-
-            recon, mu, logvar = model(X_test_t)
-
-            recon_error = (
-                (X_test_t - recon) ** 2
-            ).mean(dim=(1,2))
-
-            kl_div = -0.5 * torch.sum(
-                1 + logvar - mu.pow(2) - logvar.exp(),
-                dim=1
+            reconstruction = model(
+                X_test_t
             )
-
-            scores = (recon_error + kl_div).detach().cpu().numpy()
-
+            scores = ((X_test_t - reconstruction) ** 2).mean(dim=(1,2)).cpu().numpy()
 
         threshold = percentile_threshold(scores, percentile=95)
         preds = (scores > threshold).astype(int)
@@ -177,7 +164,7 @@ for channel in channels:
         results.append(metrics)
         
         pd.DataFrame(results).to_csv(
-            "results/smap_sisvae_partial.csv",
+            "results/smap_smda_net_partial.csv",
             index=False
         )
         
@@ -191,7 +178,7 @@ results_df = pd.DataFrame(results)
 
 if results_df.empty:
     raise RuntimeError(
-        "SISVAE produced no results — check earlier errors"
+        "SMDA Net produced no results — check earlier errors"
     )
 
 expected_cols = [
@@ -202,7 +189,7 @@ expected_cols = [
 results_df = results_df[expected_cols]
 
 results_df.to_csv(
-    "smap_sisvae_results.csv",
+    "smap_smda_net_results.csv",
     index=False
 )
 
