@@ -45,7 +45,7 @@ channels = loader.get_channels()
 #Test Mode
 channels = channels[:3]
 
- = []
+results = []
 
 WINDOW_SIZE = 100
 
