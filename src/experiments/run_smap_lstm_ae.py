@@ -1,3 +1,15 @@
+import os
+import sys
+
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(
+        os.path.dirname(__file__),
+        "../.."
+    )
+)
+
+sys.path.insert(0, PROJECT_ROOT)
+
 import pandas as pd
 import numpy as np
 import torch
@@ -15,14 +27,17 @@ from src.evaluation.metrics import evaluate
 from src.evaluation.thresholding import percentile_threshold
 
 loader = SMAPLoader(
-    train_dir="data/train",
-    test_dir="data/test",
-    labels_file="labeled_anomalies.xlsx"
+    train_dir="src/datasets/raw/SMAP/train",
+    test_dir="src/datasets/raw/SMAP/test",
+    labels_file="src/datasets/raw/SMAP/labeled_anomalies.csv"
 )
 
 metadata = loader.load_metadata()
 
 channels = loader.get_channels()
+
+#Test Mode
+#channels = channels[:3]
 
 results = []
 
