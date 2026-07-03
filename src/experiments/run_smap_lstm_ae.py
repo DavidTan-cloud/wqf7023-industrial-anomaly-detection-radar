@@ -45,6 +45,12 @@ for channel in channels:
             channel
         )
 
+        if train.ndim == 1:
+            train = train.reshape(-1,1)
+            
+        if test.ndim == 1:
+            test = test.reshape(-1, 1)
+
         anomaly_sequence = row[
             "anomaly_sequences"
         ]
@@ -53,6 +59,11 @@ for channel in channels:
             anomaly_sequence,
             len(test)
         )
+        
+        if len(labels) != len(test):
+            raise ValueError(
+                f"Label length mismatch for {channel}"
+            )
 
         scaler = DataNormalizer()
 
@@ -112,6 +123,12 @@ for channel in channels:
 
         metrics["Channel"] = channel_id
         results.append(metrics)
+        
+        pd.DataFrame(results).to_csv(
+            "results/smap_lstm_ae_partial.csv",
+            index=False
+        )
+        
         print(f"Completed {channel_id}")
 
     except Exception as e:
