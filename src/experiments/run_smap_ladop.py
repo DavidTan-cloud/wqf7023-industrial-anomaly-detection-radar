@@ -12,7 +12,6 @@ sys.path.insert(0, PROJECT_ROOT)
 
 import pandas as pd
 import numpy as np
-import torch
 
 from src.datasets.smap_loader import SMAPLoader
 from src.datasets.label_builder import build_labels
@@ -100,34 +99,8 @@ for channel in channels:
             WINDOW_SIZE
         )
 
-        X_train_t = torch.FloatTensor(
-            X_train
-        )
-
-        X_test_t = torch.FloatTensor(
-            X_test
-        )
-
         model = LADOP()
-
         model.fit(X_train)
-
-        optimizer = torch.optim.Adam(
-            model.parameters(),
-            lr=0.001
-        )
-
-        criterion = torch.nn.MSELoss()
-
-        for epoch in range(10):
-            optimizer.zero_grad()
-            output = model(X_train_t)
-
-            loss = criterion(output, X_train_t)
-
-            loss.backward()
-            optimizer.step()
-
         scores = model.score(X_test)
 
         threshold = percentile_threshold(scores, percentile=95)
@@ -150,16 +123,17 @@ for channel in channels:
 
 results_df = pd.DataFrame(results)
 
-results_df = results_df[
-    [
-        "Channel",
-        "Accuracy",
-        "Precision",
-        "Recall",
-        "F1",
-        "AUC"
-    ]
-]
+if results_df.empty:
+    raise RuntimeError("No LADOP results were generated")
+
+expected_cols = ["Channel","Accuracy","Precision","Recall","F1","AUC"]
+
+missing = set(expected_cols) - set(results_df.columns)
+
+if missing:
+    raise RuntimeError(f"Missing columns in results: {missing}")
+
+results_df = results_df[expected_cols]
 
 results_df.to_csv(
     "smap_ladop_results.csv",
