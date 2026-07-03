@@ -14,6 +14,12 @@ import pandas as pd
 import numpy as np
 import torch
 
+device = torch.device(
+    "cuda" if torch.cuda.is_available() else "cpu"
+)
+
+print("Using device:", device)
+
 from src.datasets.smap_loader import SMAPLoader
 from src.datasets.label_builder import build_labels
 
@@ -39,7 +45,7 @@ channels = loader.get_channels()
 #Test Mode
 channels = channels[:3]
 
-results = []
+ = []
 
 WINDOW_SIZE = 100
 
@@ -183,16 +189,17 @@ for channel in channels:
 
 results_df = pd.DataFrame(results)
 
-results_df = results_df[
-    [
-        "Channel",
-        "Accuracy",
-        "Precision",
-        "Recall",
-        "F1",
-        "AUC"
-    ]
+if results_df.empty:
+    raise RuntimeError(
+        "SISVAE produced no results — check earlier errors"
+    )
+
+expected_cols = [
+    "Channel", "Accuracy", "Precision",
+    "Recall", "F1", "AUC"
 ]
+
+results_df = results_df[expected_cols]
 
 results_df.to_csv(
     "smap_sisvae_results.csv",
