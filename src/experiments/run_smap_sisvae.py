@@ -202,7 +202,7 @@ expected_cols = [
 results_df = results_df[expected_cols]
 
 results_df.to_csv(
-    "smap_sisvae_results.csv",
+    "results/smap_sisvae_results.csv",
     index=False
 )
 

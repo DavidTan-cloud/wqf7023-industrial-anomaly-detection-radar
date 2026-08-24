@@ -198,7 +198,7 @@ expected_cols = [
 results_df = results_df[expected_cols]
 
 results_df.to_csv(
-    "smap_smda_net_results.csv",
+    "results/smap_smda_net_results.csv",
     index=False
 )
 

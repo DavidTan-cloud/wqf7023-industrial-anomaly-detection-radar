@@ -164,7 +164,7 @@ results_df = results_df[
 ]
 
 results_df.to_csv(
-    "smap_lstm_ae_results.csv",
+    "results/smap_lstm_ae_results.csv",
     index=False
 )
 

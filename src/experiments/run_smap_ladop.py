@@ -136,7 +136,7 @@ if missing:
 results_df = results_df[expected_cols]
 
 results_df.to_csv(
-    "smap_ladop_results.csv",
+    "results/smap_ladop_results.csv",
     index=False
 )
 
