@@ -101,6 +101,7 @@ for channel in channels:
         )
 
         model = LADOP()
+        param_count = 0
         train_start = time.time()
         model.fit(X_train)
         training_time = time.time() - train_start
@@ -114,6 +115,7 @@ for channel in channels:
         metrics = evaluate(y_test, preds, scores)
         metrics["TrainingTime"] = training_time
         metrics["InferenceTime"] = inference_time
+        metrics["Parameters"] = param_count
 
         metrics["Channel"] = channel_id
         results.append(metrics)
@@ -134,7 +136,7 @@ results_df = pd.DataFrame(results)
 if results_df.empty:
     raise RuntimeError("No LADOP results were generated")
 
-expected_cols = ["Channel","Accuracy","Precision","Recall","F1","AUC","TrainingTime","InferenceTime"]
+expected_cols = ["Channel","Accuracy","Precision","Recall","F1","AUC","TrainingTime","InferenceTime","Parameters"]
 
 missing = set(expected_cols) - set(results_df.columns)
 
@@ -172,4 +174,9 @@ print(
     "Average Inference Time:",
     results_df["InferenceTime"].mean(),
     "seconds"
+)
+
+print(
+    "Model Parameters:",
+    results_df["Parameters"].iloc[0]
 )
