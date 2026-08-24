@@ -220,5 +220,6 @@ print(
 )
 
 print(
-    f"Parameters: {param_count:,}"
+    "Model Parameters:",
+    int(results_df["Parameters"].iloc[0])
 )
