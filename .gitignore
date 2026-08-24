@@ -1,1 +1,3 @@
 radar_env/
+src/datasets/raw/
+src/datasets/processed/
