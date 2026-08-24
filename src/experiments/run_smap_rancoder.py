@@ -238,6 +238,6 @@ print(
 )
 
 print(
-    "RANCoder Parameters:",
+    "Model Parameters:",
     int(results_df["Parameters"].iloc[0])
 )

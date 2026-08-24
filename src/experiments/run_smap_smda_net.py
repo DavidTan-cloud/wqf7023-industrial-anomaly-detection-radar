@@ -258,6 +258,6 @@ print(
 )
 
 print(
-    "SMDA-Net Parameters:",
+    "Model Parameters:",
     int(results_df["Parameters"].iloc[0])
 )
