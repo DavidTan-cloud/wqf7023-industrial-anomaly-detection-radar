@@ -27,3 +27,27 @@ Average AUC: 0.6186150265097633
 Average Training Time: 0.8694849014282227 seconds
 Average Inference Time: 0.02417159080505371 seconds
 Model Parameters: 28896
+
+Train: (707, 313, 20)
+Val: (152, 313, 20)
+Test: (559, 313, 20)
+Labels: (559,)
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\wqf7023-industrial-anomaly-detection-radar\src\experiments\run_mimii_ladop.py", line 62, in <module>
+    scores = model.score(X_test_flat)
+  File "C:\Users\david\Documents\GitHub\wqf7023-industrial-anomaly-detection-radar\src\models\ladop.py", line 14, in score
+    scores = np.mean(
+        (X - self.mean_pattern) ** 2,
+        axis=(1, 2)
+    )
+  File "C:\Users\david\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\numpy\_core\fromnumeric.py", line 3824, in mean
+    return _methods._mean(a, axis=axis, dtype=dtype,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                          out=out, **kwargs)
+                          ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\david\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\numpy\_core\_methods.py", line 120, in _mean
+    rcount = _count_reduce_items(arr, axis, keepdims=keepdims, where=where)
+  File "C:\Users\david\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\numpy\_core\_methods.py", line 83, in _count_reduce_items
+    items *= arr.shape[mu.normalize_axis_index(ax, arr.ndim)]
+                       ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+numpy.exceptions.AxisError: axis 2 is out of bounds for array of dimension 2
