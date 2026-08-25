@@ -19,6 +19,8 @@ device = torch.device(
     "cuda" if torch.cuda.is_available() else "cpu"
 )
 
+print("Using device:", device)
+
 from src.datasets.smap_loader import SMAPLoader
 from src.datasets.label_builder import build_labels
 
