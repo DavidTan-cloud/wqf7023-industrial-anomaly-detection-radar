@@ -240,3 +240,20 @@ print(
 print(
     f"Anomaly files: {len(anomaly_files)}"
 )
+
+Normal files: 1011
+Anomaly files: 407
+Train Normal: 707
+Validation Normal: 152
+Test Normal: 152
+Anomaly: 407
+(707, 313, 20)
+(559, 313, 20)
+(707,)
+(559,)
+(152, 313, 20)
+(152,)
+Test Normals: 152
+Test Anomalies: 407
+Normal files: 1011
+Anomaly files: 407
