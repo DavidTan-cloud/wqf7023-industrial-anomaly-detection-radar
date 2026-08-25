@@ -83,3 +83,28 @@ Average AUC: 0.6283137204189836
 Average Training Time: 1.4275891780853271 seconds
 Average Inference Time: 0.0542759895324707 seconds
 Model Parameters: 2823484
+
+SMDA-Net
+Using device: cuda
+Train: (707, 313, 20)
+Val: (152, 313, 20)
+Test: (559, 313, 20)
+Labels: (559,)
+Test Normals: 152
+Test Anomalies: 407
+Epoch 5/50 | Loss=0.743080 | Elapsed=1.2s
+Epoch 10/50 | Loss=0.539796 | Elapsed=5.2s
+Epoch 15/50 | Loss=0.446781 | Elapsed=6.3s
+Epoch 20/50 | Loss=0.388474 | Elapsed=10.2s
+Epoch 25/50 | Loss=0.346534 | Elapsed=12.0s
+Epoch 30/50 | Loss=0.310168 | Elapsed=16.9s
+Epoch 35/50 | Loss=0.279877 | Elapsed=17.5s
+Epoch 40/50 | Loss=0.254735 | Elapsed=22.0s
+Epoch 45/50 | Loss=0.233267 | Elapsed=23.2s
+Epoch 50/50 | Loss=0.214263 | Elapsed=26.6s
+Completed fan_id00
+Average F1: 0.11494252873563218
+Average AUC: 0.6243857493857493
+Average Training Time: 28.24288034439087 seconds
+Average Inference Time: 0.3781282901763916 seconds
+Model Parameters: 138836
