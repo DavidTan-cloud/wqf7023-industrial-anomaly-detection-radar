@@ -42,24 +42,14 @@ print("Val:", X_val.shape)
 print("Test:", X_test.shape)
 print("Labels:", y_test.shape)
 
-X_train_flat = X_train.reshape(
-    X_train.shape[0],
-    -1
-)
-
-X_test_flat = X_test.reshape(
-    X_test.shape[0],
-    -1
-)
-
 model = LADOP()
 param_count = 0
 train_start = time.time()
-model.fit(X_train_flat)
+model.fit(X_train)
 training_time = time.time() - train_start
 
 inference_start = time.time()
-scores = model.score(X_test_flat)
+scores = model.score(X_test)
 inference_time = time.time() - inference_start
 
 threshold = percentile_threshold(scores, percentile=95)
