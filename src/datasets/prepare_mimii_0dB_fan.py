@@ -1,3 +1,4 @@
+from sklearn.model_selection import train_test_split
 import joblib
 
 train_normal, temp_normal = train_test_split(
