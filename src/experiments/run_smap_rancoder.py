@@ -198,7 +198,7 @@ expected_cols = [
     "Precision",
     "Recall", 
     "F1", 
-    "AUC"
+    "AUC",
     "TrainingTime",
     "InferenceTime",
     "Parameters"
