@@ -15,6 +15,10 @@ import pandas as pd
 import numpy as np
 import torch
 
+device = torch.device(
+    "cuda" if torch.cuda.is_available() else "cpu"
+)
+
 from src.datasets.smap_loader import SMAPLoader
 from src.datasets.label_builder import build_labels
 
@@ -103,15 +107,15 @@ for channel in channels:
 
         X_train_t = torch.FloatTensor(
             X_train
-        )
+        ).to(device)
 
         X_test_t = torch.FloatTensor(
             X_test
-        )
+        ).to(device)
 
         model = LSTMAE(
             input_dim=X_train.shape[-1]
-        )
+        ).to(device)
 
         param_count = sum(
             p.numel()
