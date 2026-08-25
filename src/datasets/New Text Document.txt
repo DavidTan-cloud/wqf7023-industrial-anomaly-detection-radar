@@ -4,3 +4,26 @@ Torch CUDA: None
 
 pip uninstall torch torchvision torchaudio -y
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
+
+Using device: cuda
+Train: (707, 313, 20)
+Val: (152, 313, 20)
+Test: (559, 313, 20)
+Labels: (559,)
+Model Device: cuda:0
+Epoch 5/50 | Loss=0.975125 | Elapsed=0.2s
+Epoch 10/50 | Loss=0.935442 | Elapsed=0.3s
+Epoch 15/50 | Loss=0.894098 | Elapsed=0.3s
+Epoch 20/50 | Loss=0.849363 | Elapsed=0.4s
+Epoch 25/50 | Loss=0.803202 | Elapsed=0.5s
+Epoch 30/50 | Loss=0.760054 | Elapsed=0.5s
+Epoch 35/50 | Loss=0.720860 | Elapsed=0.6s
+Epoch 40/50 | Loss=0.685654 | Elapsed=0.7s
+Epoch 45/50 | Loss=0.654408 | Elapsed=0.7s
+Epoch 50/50 | Loss=0.626401 | Elapsed=0.8s
+Completed fan_id00
+Average F1: 0.11954022988505747
+Average AUC: 0.6186150265097633
+Average Training Time: 0.8694849014282227 seconds
+Average Inference Time: 0.02417159080505371 seconds
+Model Parameters: 28896
