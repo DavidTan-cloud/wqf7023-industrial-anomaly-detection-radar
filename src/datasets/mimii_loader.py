@@ -27,7 +27,6 @@ class MIMIILoader:
         machine_dir = os.path.join(
             self.root_dir,
             dataset_name,
-            machine_type,
             f"id_{machine_id}"
         )
 
