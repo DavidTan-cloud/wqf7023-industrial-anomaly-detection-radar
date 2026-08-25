@@ -65,3 +65,21 @@ Average AUC: 0.5819054700633647
 Average Training Time: 1.7992329597473145 seconds
 Average Inference Time: 0.006541252136230469 seconds
 Model Parameters: 46388
+
+RANCoder
+Using device: cuda
+Train: (707, 313, 20)
+Val: (152, 313, 20)
+Test: (559, 313, 20)
+Labels: (559,)
+Test Normals: 152
+Test Anomalies: 407
+AE 1 trained
+AE 2 trained
+AE 3 trained
+Completed fan_id00
+Average F1: 0.12413793103448276
+Average AUC: 0.6283137204189836
+Average Training Time: 1.4275891780853271 seconds
+Average Inference Time: 0.0542759895324707 seconds
+Model Parameters: 2823484
