@@ -21,27 +21,10 @@ device = torch.device(
 
 print("Using device:", device)
 
-from src.datasets.smap_loader import SMAPLoader
-from src.datasets.label_builder import build_labels
-
-from src.preprocessing.windowing import create_windows
-from src.preprocessing.label_windowing import create_window_labels
-from src.preprocessing.normalization import DataNormalizer
-
 from src.models.lstm_ae import LSTMAE
 
 from src.evaluation.metrics import evaluate
 from src.evaluation.thresholding import percentile_threshold
-
-loader = SMAPLoader(
-    train_dir="src/datasets/raw/SMAP/train",
-    test_dir="src/datasets/raw/SMAP/test",
-    labels_file="src/datasets/raw/SMAP/labeled_anomalies.csv"
-)
-
-metadata = loader.load_metadata()
-
-channels = loader.get_channels()
 
 #Test Mode
 #channels = channels[:3]
@@ -51,6 +34,26 @@ results = []
 WINDOW_SIZE = 100
 
 for channel in channels:
+
+    X_train = np.load(
+        "src/datasets/processed/MIMII/fan_id00_X_train.npy"
+    )
+
+    X_val = np.load(
+        "src/datasets/processed/MIMII/fan_id00_X_val.npy"
+    )
+
+    X_test = np.load(
+        "src/datasets/processed/MIMII/fan_id00_X_test.npy"
+    )
+
+    y_test = np.load(
+        "src/datasets/processed/MIMII/fan_id00_y_test.npy"
+    )
+
+    print("Train:", X_train.shape)
+    print("Val:", X_val.shape)
+    print("Test:", X_test.shape)
 
     try:
         channel_id = channel.replace(
@@ -133,7 +136,16 @@ for channel in channels:
 
         train_start = time.time()
 
-        for epoch in range(10):
+        EPOCHS = 50
+
+        for epoch in range(EPOCHS):
+            if (epoch + 1) % 5 == 0:
+                elapsed = time.time() - train_start
+                print(
+                    f"Epoch {epoch+1}/{EPOCHS} | "
+                    f"Loss={loss.item():.6f} | "
+                    f"Elapsed={elapsed:.1f}s"
+                )
             optimizer.zero_grad()
             output = model(X_train_t)
 
@@ -174,7 +186,7 @@ for channel in channels:
         results.append(metrics)
         
         pd.DataFrame(results).to_csv(
-            "results/smap_lstm_ae_partial.csv",
+            "results/MIMII/mimii_lstm_ae_partial.csv",
             index=False
         )
         
@@ -201,7 +213,7 @@ results_df = results_df[
 ]
 
 results_df.to_csv(
-    "results/smap_lstm_ae_results.csv",
+    "results/MIMII/mimii_lstm_ae_results.csv",
     index=False
 )
 
