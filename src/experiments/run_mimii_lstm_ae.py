@@ -26,181 +26,129 @@ from src.models.lstm_ae import LSTMAE
 from src.evaluation.metrics import evaluate
 from src.evaluation.thresholding import percentile_threshold
 
-#Test Mode
-#channels = channels[:3]
-
 results = []
 
-WINDOW_SIZE = 100
+X_train = np.load(
+    "src/datasets/processed/MIMII/fan_id00_X_train.npy"
+)
 
-for channel in channels:
+X_val = np.load(
+    "src/datasets/processed/MIMII/fan_id00_X_val.npy"
+)
 
-    X_train = np.load(
-        "src/datasets/processed/MIMII/fan_id00_X_train.npy"
-    )
+X_test = np.load(
+    "src/datasets/processed/MIMII/fan_id00_X_test.npy"
+)
 
-    X_val = np.load(
-        "src/datasets/processed/MIMII/fan_id00_X_val.npy"
-    )
+y_test = np.load(
+    "src/datasets/processed/MIMII/fan_id00_y_test.npy"
+)
 
-    X_test = np.load(
-        "src/datasets/processed/MIMII/fan_id00_X_test.npy"
-    )
+print("Train:", X_train.shape)
+print("Val:", X_val.shape)
+print("Test:", X_test.shape)
+print("Labels:", y_test.shape)
 
-    y_test = np.load(
-        "src/datasets/processed/MIMII/fan_id00_y_test.npy"
-    )
+X_train_t = torch.FloatTensor(
+    X_train
+).to(device)
 
-    print("Train:", X_train.shape)
-    print("Val:", X_val.shape)
-    print("Test:", X_test.shape)
+X_test_t = torch.FloatTensor(
+    X_test
+).to(device)
 
-    try:
-        channel_id = channel.replace(
-            ".npy",
-            ""
+model = LSTMAE(
+    input_dim=X_train.shape[-1]
+).to(device)
+
+print(
+    "Model Device:",
+    next(model.parameters()).device
+)
+
+param_count = sum(
+    p.numel()
+    for p in model.parameters()
+)
+
+optimizer = torch.optim.Adam(
+    model.parameters(),
+    lr=0.001
+)
+
+criterion = torch.nn.MSELoss()
+
+train_start = time.time()
+
+EPOCHS = 50
+for epoch in range(EPOCHS):
+    optimizer.zero_grad()
+    output = model(X_train_t)
+
+    loss = criterion(output, X_train_t)
+
+    loss.backward()
+    optimizer.step()
+
+    if (epoch + 1) % 5 == 0:
+        elapsed = time.time() - train_start
+        print(
+            f"Epoch {epoch+1}/{EPOCHS} | "
+            f"Loss={loss.item():.6f} | "
+            f"Elapsed={elapsed:.1f}s"
         )
 
-        row = metadata[
-            metadata["chan_id"]
-            == channel_id
-        ].iloc[0]
+training_time = (
+    time.time() - train_start
+)
 
-        train, test = loader.load_channel(
-            channel
-        )
+inference_start = time.time()
 
-        if train.ndim == 1:
-            train = train.reshape(-1,1)
-            
-        if test.ndim == 1:
-            test = test.reshape(-1, 1)
+with torch.no_grad():
+    reconstruction = model(X_test_t)
+    scores = (
+        ((X_test_t - reconstruction) ** 2)
+        .mean(dim=(1,2))
+        .detach()
+        .cpu()
+        .numpy()
+    )
 
-        anomaly_sequence = row[
-            "anomaly_sequences"
-        ]
+inference_time = (
+    time.time() - inference_start
+)
 
-        labels = build_labels(
-            anomaly_sequence,
-            len(test)
-        )
+threshold = percentile_threshold(scores, percentile=95)
+preds = (scores > threshold).astype(int)
+metrics = evaluate(y_test, preds, scores)
+
+metrics["TrainingTime"] = training_time
+metrics["InferenceTime"] = inference_time
+metrics["Parameters"] = param_count
+
+metrics["Machine"] = "fan_id00"
+results.append(metrics)
         
-        if len(labels) != len(test):
-            raise ValueError(
-                f"Label length mismatch for {channel}"
-            )
-
-        scaler = DataNormalizer()
-
-        train = scaler.fit_transform(train)
-        test = scaler.transform(test)
-
-        X_train = create_windows(
-            train,
-            WINDOW_SIZE
-        )
-
-        X_test = create_windows(
-            test,
-            WINDOW_SIZE
-        )
-
-        y_test = create_window_labels(
-            labels,
-            WINDOW_SIZE
-        )
-
-        X_train_t = torch.FloatTensor(
-            X_train
-        ).to(device)
-
-        X_test_t = torch.FloatTensor(
-            X_test
-        ).to(device)
-
-        model = LSTMAE(
-            input_dim=X_train.shape[-1]
-        ).to(device)
-
-        param_count = sum(
-            p.numel()
-            for p in model.parameters()
-        )
-
-        optimizer = torch.optim.Adam(
-            model.parameters(),
-            lr=0.001
-        )
-
-        criterion = torch.nn.MSELoss()
-
-        train_start = time.time()
-
-        EPOCHS = 50
-
-        for epoch in range(EPOCHS):
-            if (epoch + 1) % 5 == 0:
-                elapsed = time.time() - train_start
-                print(
-                    f"Epoch {epoch+1}/{EPOCHS} | "
-                    f"Loss={loss.item():.6f} | "
-                    f"Elapsed={elapsed:.1f}s"
-                )
-            optimizer.zero_grad()
-            output = model(X_train_t)
-
-            loss = criterion(output, X_train_t)
-
-            loss.backward()
-            optimizer.step()
-
-        training_time = (
-            time.time() - train_start
-        )
-
-        inference_start = time.time()
-
-        with torch.no_grad():
-            reconstruction = model(X_test_t)
-            scores = (
-                ((X_test_t - reconstruction) ** 2)
-                .mean(dim=(1,2))
-                .detach()
-                .cpu()
-                .numpy()
-            )
-
-        inference_time = (
-            time.time() - inference_start
-        )
-
-        threshold = percentile_threshold(scores, percentile=95)
-        preds = (scores > threshold).astype(int)
-        metrics = evaluate(y_test, preds, scores)
-
-        metrics["TrainingTime"] = training_time
-        metrics["InferenceTime"] = inference_time
-        metrics["Parameters"] = param_count
-
-        metrics["Channel"] = channel_id
-        results.append(metrics)
+pd.DataFrame(results).to_csv(
+    "results/MIMII/mimii_lstm_ae_partial.csv",
+    index=False
+)
         
-        pd.DataFrame(results).to_csv(
-            "results/MIMII/mimii_lstm_ae_partial.csv",
-            index=False
-        )
-        
-        print(f"Completed {channel_id}")
+print("Completed fan_id00")
 
-    except Exception as e:
-        print(channel, e)
+del model
+del X_train_t
+del X_test_t
+del reconstruction
 
+if torch.cuda.is_available():
+    torch.cuda.empty_cache()
 
 results_df = pd.DataFrame(results)
 
 results_df = results_df[
     [
-        "Channel",
+        "Machine",
         "Accuracy",
         "Precision",
         "Recall",
