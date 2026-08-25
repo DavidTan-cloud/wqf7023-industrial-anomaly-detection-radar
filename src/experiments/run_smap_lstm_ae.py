@@ -148,7 +148,13 @@ for channel in channels:
 
         with torch.no_grad():
             reconstruction = model(X_test_t)
-            scores = ((X_test_t - reconstruction) ** 2).mean(dim=(1,2)).numpy()
+            scores = (
+                ((X_test_t - reconstruction) ** 2)
+                .mean(dim=(1,2))
+                .detach()
+                .cpu()
+                .numpy()
+            )
 
         inference_time = (
             time.time() - inference_start
