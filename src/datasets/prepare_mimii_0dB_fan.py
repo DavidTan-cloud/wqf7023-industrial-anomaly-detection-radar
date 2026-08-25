@@ -1,5 +1,48 @@
-from sklearn.model_selection import train_test_split
+import os
+import sys
+import numpy as np
 import joblib
+
+from sklearn.model_selection import train_test_split
+
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(
+        os.path.dirname(__file__),
+        "../.."
+    )
+)
+
+sys.path.insert(0, PROJECT_ROOT)
+
+from src.datasets.mimii_loader import MIMIILoader
+from src.datasets.mimii_preprocessor import (
+    MIMIIPreprocessor
+)
+from src.preprocessing.normalization import (
+    DataNormalizer
+)
+
+# Create loader
+loader = MIMIILoader(
+    root_dir="src/datasets/raw/MIMII"
+)
+
+# Create processor
+processor = MIMIIPreprocessor()
+
+# Load files
+normal_files, anomaly_files = loader.load_machine(
+    dataset_name="0_dB_fan",
+    machine_id="00"
+)
+
+print(
+    f"Normal files: {len(normal_files)}"
+)
+
+print(
+    f"Anomaly files: {len(anomaly_files)}"
+)
 
 train_normal, temp_normal = train_test_split(
     normal_files,
