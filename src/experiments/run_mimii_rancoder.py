@@ -21,169 +21,133 @@ device = torch.device(
 
 print("Using device:", device)
 
-from src.datasets.smap_loader import SMAPLoader
-from src.datasets.label_builder import build_labels
-
-from src.preprocessing.windowing import create_windows
-from src.preprocessing.label_windowing import create_window_labels
-from src.preprocessing.normalization import DataNormalizer
-
 from src.models.rancoder import RANCoder
 
 from src.evaluation.metrics import evaluate
 from src.evaluation.thresholding import percentile_threshold
 
-loader = SMAPLoader(
-    train_dir="src/datasets/raw/SMAP/train",
-    test_dir="src/datasets/raw/SMAP/test",
-    labels_file="src/datasets/raw/SMAP/labeled_anomalies.csv"
-)
-
-metadata = loader.load_metadata()
-
-channels = loader.get_channels()
-
-#Test Mode
-#channels = channels[:3]
-
 results = []
 
-WINDOW_SIZE = 100
+X_train = np.load(
+    "src/datasets/processed/MIMII/fan_id00_X_train.npy"
+)
 
-for channel in channels:
+X_val = np.load(
+    "src/datasets/processed/MIMII/fan_id00_X_val.npy"
+)
 
-    try:
-        channel_id = channel.replace(
-            ".npy",
-            ""
-        )
+X_test = np.load(
+    "src/datasets/processed/MIMII/fan_id00_X_test.npy"
+)
 
-        row = metadata[
-            metadata["chan_id"]
-            == channel_id
-        ].iloc[0]
+y_test = np.load(
+    "src/datasets/processed/MIMII/fan_id00_y_test.npy"
+)
 
-        train, test = loader.load_channel(
-            channel
-        )
+print("Train:", X_train.shape)
+print("Val:", X_val.shape)
+print("Test:", X_test.shape)
+print("Labels:", y_test.shape)
 
-        if train.ndim == 1:
-            train = train.reshape(-1,1)
-            
-        if test.ndim == 1:
-            test = test.reshape(-1, 1)
+print(
+    "Test Normals:",
+    np.sum(y_test == 0)
+)
 
-        anomaly_sequence = row[
-            "anomaly_sequences"
-        ]
+print(
+    "Test Anomalies:",
+    np.sum(y_test == 1)
+)
 
-        labels = build_labels(
-            anomaly_sequence,
-            len(test)
-        )
+X_train_flat = X_train.reshape(
+    X_train.shape[0],
+    -1
+)
+
+X_test_flat = X_test.reshape(
+    X_test.shape[0],
+    -1
+)
+
+X_train_t = torch.FloatTensor(
+    X_train_flat
+).to(device)
+
+X_test_t = torch.FloatTensor(
+    X_test_flat
+).to(device)
+
+model = RANCoder(
+    input_dim=X_train_flat.shape[1],
+    device=device
+)
+
+param_count = sum(
+    p.numel()
+    for ae in model.models
+    for p in ae.parameters()
+)
+
+train_start = time.time()
+
+model.fit(
+    X_train_t,
+    epochs=50
+)
+
+training_time = (
+    time.time() - train_start
+)
+
+inference_start = time.time()
         
-        if len(labels) != len(test):
-            raise ValueError(
-                f"Label length mismatch for {channel}"
-            )
+scores = model.score(
+    X_test_t
+)
 
-        scaler = DataNormalizer()
+if isinstance(scores, torch.Tensor):
+    scores = (
+        scores.detach()
+        .cpu()
+        .numpy()
+    )
+else:
+    scores = np.asarray(scores)
 
-        train = scaler.fit_transform(train)
-        test = scaler.transform(test)
-
-        X_train = create_windows(
-            train,
-            WINDOW_SIZE
-        )
-
-        X_test = create_windows(
-            test,
-            WINDOW_SIZE
-        )
-
-        y_test = create_window_labels(
-            labels,
-            WINDOW_SIZE
-        )
-
-        X_train_flat = X_train.reshape(
-            X_train.shape[0],
-            -1
-        )
-
-        X_test_flat = X_test.reshape(
-            X_test.shape[0],
-            -1
-        )
-
-        X_train_t = torch.FloatTensor(
-            X_train_flat
-        ).to(device)
-
-        X_test_t = torch.FloatTensor(
-            X_test_flat
-        ).to(device)
-
-        model = RANCoder(
-            input_dim=X_train_flat.shape[1],
-            device=device
-        )
-
-        param_count = sum(
-            p.numel()
-            for ae in model.models
-            for p in ae.parameters()
-        )
-
-        train_start = time.time()
-
-        model.fit(
-            X_train_t,
-            epochs=20
-        )
-
-        training_time = (
-            time.time() - train_start
-        )
-
-        inference_start = time.time()
+inference_time = (
+    time.time() - inference_start
+)
         
-        scores = model.score(
-            X_test_t
-        )
+if len(scores) != len(y_test):
+    raise RuntimeError(
+        f"Score length mismatch: {len(scores)} vs {len(y_test)}"
+    )
 
-        inference_time = (
-            time.time() - inference_start
-        )
+threshold = percentile_threshold(scores, percentile=95)
+preds = (scores > threshold).astype(int)
+metrics = evaluate(y_test, preds, scores)
+
+metrics["TrainingTime"] = training_time
+metrics["InferenceTime"] = inference_time
+metrics["Parameters"] = param_count
+
+metrics["Machine"] = "fan_id00"
+results.append(metrics)
         
-        if len(scores) != len(y_test):
-            raise ValueError(
-                f"Score length mismatch for {channel_id}: "
-                f"{len(scores)} vs {len(y_test)}"
-            )
-
-        threshold = percentile_threshold(scores, percentile=95)
-        preds = (scores > threshold).astype(int)
-        metrics = evaluate(y_test, preds, scores)
-
-        metrics["TrainingTime"] = training_time
-        metrics["InferenceTime"] = inference_time
-        metrics["Parameters"] = param_count
-
-        metrics["Channel"] = channel_id
-        results.append(metrics)
+pd.DataFrame(results).to_csv(
+    "results/MIMII/mimii_rancoder_partial.csv",
+    index=False
+)
         
-        pd.DataFrame(results).to_csv(
-            "results/smap_rancoder_partial.csv",
-            index=False
-        )
-        
-        print(f"Completed {channel_id}")
+print("Completed fan_id00")
 
-    except Exception as e:
-        print(channel, e)
+del model
+del X_train_t
+del X_test_t
+del scores
 
+if torch.cuda.is_available():
+    torch.cuda.empty_cache()
 
 results_df = pd.DataFrame(results)
 
@@ -193,7 +157,7 @@ if results_df.empty:
     )
 
 expected_cols = [
-    "Channel", 
+    "Machine", 
     "Accuracy", 
     "Precision",
     "Recall", 
@@ -207,7 +171,7 @@ expected_cols = [
 results_df = results_df[expected_cols]
 
 results_df.to_csv(
-    "results/smap_rancoder_results.csv",
+    "results/MIMII/mimii_rancoder_results.csv",
     index=False
 )
 
