@@ -19,7 +19,7 @@ from src.datasets.mimii_preprocessor import (
 processor = MIMIIPreprocessor()
 
 features = processor.extract_features(
-    "src/datasets/raw/MIMII/0_dB_fan/id_00/normal/normal_id_00_00000000.wav"
+    "src/datasets/raw/MIMII/0_dB_fan/id_00/normal/00000000.wav"
 )
 
 print(features.shape)
