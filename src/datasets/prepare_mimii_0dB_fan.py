@@ -1,7 +1,6 @@
 import joblib
 
-train_normal,
-temp_normal = train_test_split(
+train_normal, temp_normal = train_test_split(
     normal_files,
     test_size=0.30,
     random_state=42
