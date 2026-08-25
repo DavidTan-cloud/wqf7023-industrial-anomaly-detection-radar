@@ -11,7 +11,6 @@ PROJECT_ROOT = os.path.abspath(
 sys.path.insert(0, PROJECT_ROOT)
 
 print(PROJECT_ROOT)
-print(os.getcwd())
 
 from src.datasets.mimii_loader import MIMIILoader
 
