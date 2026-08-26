@@ -21,91 +21,57 @@ device = torch.device(
 
 print("Using device:", device)
 
-from src.datasets.smap_loader import SMAPLoader
-from src.datasets.label_builder import build_labels
-
-from src.preprocessing.windowing import create_windows
-from src.preprocessing.label_windowing import create_window_labels
-from src.preprocessing.normalization import DataNormalizer
-
 from src.models.lstm_ae import LSTMAE
 
 from src.evaluation.metrics import evaluate
 from src.evaluation.thresholding import percentile_threshold
 
-loader = SMAPLoader(
-    train_dir="src/datasets/raw/SMAP/train",
-    test_dir="src/datasets/raw/SMAP/test",
-    labels_file="src/datasets/raw/SMAP/labeled_anomalies.csv"
-)
-
-metadata = loader.load_metadata()
-
-channels = loader.get_channels()
-
-#Test Mode
-#channels = channels[:3]
+machines = [
+    "fan_id00",
+    "fan_id02",
+    "fan_id04",
+    "fan_id06",
+    "pump_id00",
+    "pump_id02",
+    "pump_id04",
+    "pump_id06",
+    "slider_id00",
+    "slider_id02",
+    "slider_id04",
+    "slider_id06",
+    "valve_id00",
+    "valve_id02",
+    "valve_id04",
+    "valve_id06",
+]
 
 results = []
 
-WINDOW_SIZE = 100
-
-for channel in channels:
+for machine in machines:
 
     try:
-        channel_id = channel.replace(
-            ".npy",
-            ""
-        )
-
-        row = metadata[
-            metadata["chan_id"]
-            == channel_id
-        ].iloc[0]
-
-        train, test = loader.load_channel(
-            channel
-        )
-
-        if train.ndim == 1:
-            train = train.reshape(-1,1)
-            
-        if test.ndim == 1:
-            test = test.reshape(-1, 1)
-
-        anomaly_sequence = row[
-            "anomaly_sequences"
-        ]
-
-        labels = build_labels(
-            anomaly_sequence,
-            len(test)
-        )
         
-        if len(labels) != len(test):
-            raise ValueError(
-                f"Label length mismatch for {channel}"
-            )
-
-        scaler = DataNormalizer()
-
-        train = scaler.fit_transform(train)
-        test = scaler.transform(test)
-
-        X_train = create_windows(
-            train,
-            WINDOW_SIZE
+        X_train = np.load(
+            f"src/datasets/processed/MIMII/{machine}_X_train.npy"
         )
 
-        X_test = create_windows(
-            test,
-            WINDOW_SIZE
+        X_val = np.load(
+            f"src/datasets/processed/MIMII/{machine}_X_val.npy"
         )
 
-        y_test = create_window_labels(
-            labels,
-            WINDOW_SIZE
+        X_test = np.load(
+            f"src/datasets/processed/MIMII/{machine}_X_test.npy"
         )
+
+        y_test = np.load(
+            f"src/datasets/processed/MIMII/{machine}_y_test.npy"
+        )
+
+        print(f"\n{machine}")
+        print("Train:", X_train.shape)
+        print("Val:", X_val.shape)
+        print("Test:", X_test.shape)
+        print("Labels:", y_test.shape)
 
         X_train_t = torch.FloatTensor(
             X_train
@@ -118,6 +84,11 @@ for channel in channels:
         model = LSTMAE(
             input_dim=X_train.shape[-1]
         ).to(device)
+
+        print(
+            "Model Device:",
+            next(model.parameters()).device
+        )
 
         param_count = sum(
             p.numel()
@@ -133,7 +104,8 @@ for channel in channels:
 
         train_start = time.time()
 
-        for epoch in range(10):
+        EPOCHS = 50
+        for epoch in range(EPOCHS):
             optimizer.zero_grad()
             output = model(X_train_t)
 
@@ -141,6 +113,14 @@ for channel in channels:
 
             loss.backward()
             optimizer.step()
+
+            if (epoch + 1) % 5 == 0:
+                elapsed = time.time() - train_start
+                print(
+                    f"Epoch {epoch+1}/{EPOCHS} | "
+                    f"Loss={loss.item():.6f} | "
+                    f"Elapsed={elapsed:.1f}s"
+                )
 
         training_time = (
             time.time() - train_start
@@ -170,25 +150,34 @@ for channel in channels:
         metrics["InferenceTime"] = inference_time
         metrics["Parameters"] = param_count
 
-        metrics["Channel"] = channel_id
+        metrics["Machine"] = machine
         results.append(metrics)
         
         pd.DataFrame(results).to_csv(
-            "results/smap_lstm_ae_partial.csv",
+            "results/MIMII/mimii_lstm_ae_partial.csv",
             index=False
         )
         
-        print(f"Completed {channel_id}")
+        print(f"Completed {machine}")
+
+        del model
+        del X_train_t
+        del X_test_t
+        del reconstruction
+
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
     except Exception as e:
-        print(channel, e)
-
+        print(
+            f"Failed {machine}: {e}"
+        )
 
 results_df = pd.DataFrame(results)
 
 results_df = results_df[
     [
-        "Channel",
+        "Machine",
         "Accuracy",
         "Precision",
         "Recall",
@@ -201,7 +190,7 @@ results_df = results_df[
 ]
 
 results_df.to_csv(
-    "results/smap_lstm_ae_results.csv",
+    "results/MIMII/mimii_lstm_ae_results.csv",
     index=False
 )
 
