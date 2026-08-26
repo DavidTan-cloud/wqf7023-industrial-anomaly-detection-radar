@@ -19,55 +19,84 @@ from src.models.ladop import LADOP
 from src.evaluation.metrics import evaluate
 from src.evaluation.thresholding import percentile_threshold
 
+machines = [
+    "fan_id00",
+    "fan_id02",
+    "fan_id04",
+    "fan_id06",
+    "pump_id00",
+    "pump_id02",
+    "pump_id04",
+    "pump_id06",
+    "slider_id00",
+    "slider_id02",
+    "slider_id04",
+    "slider_id06",
+    "valve_id00",
+    "valve_id02",
+    "valve_id04",
+    "valve_id06",
+]
+
 results = []
 
-X_train = np.load(
-    "src/datasets/processed/MIMII/fan_id00_X_train.npy"
-)
+for machine in machines:
 
-X_val = np.load(
-    "src/datasets/processed/MIMII/fan_id00_X_val.npy"
-)
+    try:
 
-X_test = np.load(
-    "src/datasets/processed/MIMII/fan_id00_X_test.npy"
-)
+        X_train = np.load(
+            f"src/datasets/processed/MIMII/{machine}_X_train.npy"
+        )
 
-y_test = np.load(
-    "src/datasets/processed/MIMII/fan_id00_y_test.npy"
-)
+        X_val = np.load(
+            f"src/datasets/processed/MIMII/{machine}_X_val.npy"
+        )
 
-print("Train:", X_train.shape)
-print("Val:", X_val.shape)
-print("Test:", X_test.shape)
-print("Labels:", y_test.shape)
+        X_test = np.load(
+            f"src/datasets/processed/MIMII/{machine}_X_test.npy"
+        )
 
-model = LADOP()
-param_count = 0
-train_start = time.time()
-model.fit(X_train)
-training_time = time.time() - train_start
+        y_test = np.load(
+            f"src/datasets/processed/MIMII/{machine}_y_test.npy"
+        )
 
-inference_start = time.time()
-scores = model.score(X_test)
-inference_time = time.time() - inference_start
+        print(f"\n{machine}")
+        print("Train:", X_train.shape)
+        print("Val:", X_val.shape)
+        print("Test:", X_test.shape)
+        print("Labels:", y_test.shape)
 
-threshold = percentile_threshold(scores, percentile=95)
-preds = (scores > threshold).astype(int)
-metrics = evaluate(y_test, preds, scores)
-metrics["TrainingTime"] = training_time
-metrics["InferenceTime"] = inference_time
-metrics["Parameters"] = param_count
-metrics["Machine"] = "fan_id00"
+        model = LADOP()
+        param_count = 0
+        train_start = time.time()
+        model.fit(X_train)
+        training_time = time.time() - train_start
 
-results.append(metrics)
+        inference_start = time.time()
+        scores = model.score(X_test)
+        inference_time = time.time() - inference_start
+
+        threshold = percentile_threshold(scores, percentile=95)
+        preds = (scores > threshold).astype(int)
+        metrics = evaluate(y_test, preds, scores)
+        metrics["TrainingTime"] = training_time
+        metrics["InferenceTime"] = inference_time
+        metrics["Parameters"] = param_count
+        metrics["Machine"] = machine
+
+        results.append(metrics)
         
-pd.DataFrame(results).to_csv(
-    "results/MIMII/mimii_ladop_partial.csv",
-    index=False
-)
+        pd.DataFrame(results).to_csv(
+            "results/MIMII/mimii_ladop_partial.csv",
+            index=False
+        )
         
-print("Completed fan_id00")
+        print(f"Completed {machine}")
+
+    except Exception as e:
+        print(
+            f"Failed {machine}: {e}"
+        )
 
 results_df = pd.DataFrame(results)
 
