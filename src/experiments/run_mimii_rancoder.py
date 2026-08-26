@@ -26,128 +26,158 @@ from src.models.rancoder import RANCoder
 from src.evaluation.metrics import evaluate
 from src.evaluation.thresholding import percentile_threshold
 
+machines = [
+    "fan_id00",
+    "fan_id02",
+    "fan_id04",
+    "fan_id06",
+    "pump_id00",
+    "pump_id02",
+    "pump_id04",
+    "pump_id06",
+    "slider_id00",
+    "slider_id02",
+    "slider_id04",
+    "slider_id06",
+    "valve_id00",
+    "valve_id02",
+    "valve_id04",
+    "valve_id06"
+]
+
 results = []
 
-X_train = np.load(
-    "src/datasets/processed/MIMII/fan_id00_X_train.npy"
-)
+for machine in machines:
 
-X_val = np.load(
-    "src/datasets/processed/MIMII/fan_id00_X_val.npy"
-)
+    try:
 
-X_test = np.load(
-    "src/datasets/processed/MIMII/fan_id00_X_test.npy"
-)
+        X_train = np.load(
+            f"src/datasets/processed/MIMII/{machine}_X_train.npy"
+        )
 
-y_test = np.load(
-    "src/datasets/processed/MIMII/fan_id00_y_test.npy"
-)
+        X_val = np.load(
+            f"src/datasets/processed/MIMII/{machine}_X_val.npy"
+        )
 
-print("Train:", X_train.shape)
-print("Val:", X_val.shape)
-print("Test:", X_test.shape)
-print("Labels:", y_test.shape)
+        X_test = np.load(
+            f"src/datasets/processed/MIMII/{machine}_X_test.npy"
+        )
 
-print(
-    "Test Normals:",
-    np.sum(y_test == 0)
-)
+        y_test = np.load(
+            f"src/datasets/processed/MIMII/{machine}_y_test.npy"
+        )
 
-print(
-    "Test Anomalies:",
-    np.sum(y_test == 1)
-)
+        print(f"\n{machine}")
+        print("Train:", X_train.shape)
+        print("Val:", X_val.shape)
+        print("Test:", X_test.shape)
+        print("Labels:", y_test.shape)
 
-X_train_flat = X_train.reshape(
-    X_train.shape[0],
-    -1
-)
+        print(
+            "Test Normals:",
+            np.sum(y_test == 0)
+        )
 
-X_test_flat = X_test.reshape(
-    X_test.shape[0],
-    -1
-)
+        print(
+            "Test Anomalies:",
+            np.sum(y_test == 1)
+        )
 
-X_train_t = torch.FloatTensor(
-    X_train_flat
-).to(device)
+        X_train_flat = X_train.reshape(
+            X_train.shape[0],
+            -1
+        )
 
-X_test_t = torch.FloatTensor(
-    X_test_flat
-).to(device)
+        X_test_flat = X_test.reshape(
+            X_test.shape[0],
+            -1
+        )
 
-model = RANCoder(
-    input_dim=X_train_flat.shape[1],
-    device=device
-)
+        X_train_t = torch.FloatTensor(
+            X_train_flat
+        ).to(device)
 
-param_count = sum(
-    p.numel()
-    for ae in model.models
-    for p in ae.parameters()
-)
+        X_test_t = torch.FloatTensor(
+            X_test_flat
+        ).to(device)
 
-train_start = time.time()
+        model = RANCoder(
+            input_dim=X_train_flat.shape[1],
+            device=device
+        )
 
-model.fit(
-    X_train_t,
-    epochs=50
-)
+        param_count = sum(
+            p.numel()
+            for ae in model.models
+            for p in ae.parameters()
+        )
 
-training_time = (
-    time.time() - train_start
-)
+        train_start = time.time()
 
-inference_start = time.time()
+        model.fit(
+            X_train_t,
+            epochs=50
+        )
+
+        training_time = (
+            time.time() - train_start
+        )
+
+        inference_start = time.time()
         
-scores = model.score(
-    X_test_t
-)
+        scores = model.score(
+            X_test_t
+        )
 
-if isinstance(scores, torch.Tensor):
-    scores = (
-        scores.detach()
-        .cpu()
-        .numpy()
-    )
-else:
-    scores = np.asarray(scores)
+        if isinstance(scores, torch.Tensor):
+            scores = (
+                scores.detach()
+                .cpu()
+                .numpy()
+            )
+        else:
+            scores = np.asarray(scores)
 
-inference_time = (
-    time.time() - inference_start
-)
+        inference_time = (
+            time.time() - inference_start
+        )
         
-if len(scores) != len(y_test):
-    raise RuntimeError(
-        f"Score length mismatch: {len(scores)} vs {len(y_test)}"
-    )
+        if len(scores) != len(y_test):
+            raise RuntimeError(
+                f"Score length mismatch: {len(scores)} vs {len(y_test)}"
+            )
 
-threshold = percentile_threshold(scores, percentile=95)
-preds = (scores > threshold).astype(int)
-metrics = evaluate(y_test, preds, scores)
+        threshold = percentile_threshold(scores, percentile=95)
+        preds = (scores > threshold).astype(int)
+        metrics = evaluate(y_test, preds, scores)
 
-metrics["TrainingTime"] = training_time
-metrics["InferenceTime"] = inference_time
-metrics["Parameters"] = param_count
+        metrics["TrainingTime"] = training_time
+        metrics["InferenceTime"] = inference_time
+        metrics["Parameters"] = param_count
 
-metrics["Machine"] = "fan_id00"
-results.append(metrics)
+        metrics["Machine"] = machine
+        results.append(metrics)
         
-pd.DataFrame(results).to_csv(
-    "results/MIMII/mimii_rancoder_partial.csv",
-    index=False
-)
+        pd.DataFrame(results).to_csv(
+            "results/MIMII/mimii_rancoder_partial.csv",
+            index=False
+        )
         
-print("Completed fan_id00")
+        print(f"Completed {machine}")
 
-del model
-del X_train_t
-del X_test_t
-del scores
+        del model
+        del X_train_t
+        del X_test_t
+        del scores
 
-if torch.cuda.is_available():
-    torch.cuda.empty_cache()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+    
+    except Exception as e:
+
+        print(
+            f"Failed {machine}: {e}"
+        )
 
 results_df = pd.DataFrame(results)
 
