@@ -16,6 +16,11 @@ import numpy as np
 import torch
 import torch.nn as nn
 
+from torch.utils.data import (
+    TensorDataset,
+    DataLoader
+)
+
 from src.models.smda_net import SMDANet
 
 device = torch.device(
@@ -72,22 +77,42 @@ for dataset in datasets:
             np.sum(y_test == 1)
         )
 
-        X_train_t = torch.FloatTensor(
-            X_train
-        ).to(device)
+        train_dataset = TensorDataset(
+            torch.FloatTensor(X_train)
+        )
 
-        X_test_t = torch.FloatTensor(
-            X_test
-        ).to(device)
+        train_loader = DataLoader(
+            train_dataset,
+            batch_size=256,
+            shuffle=True
+        )
 
+        test_dataset = TensorDataset(
+            torch.FloatTensor(X_test)
+        )
+
+        test_loader = DataLoader(
+            test_dataset,
+            batch_size=256,
+            shuffle=False
+        )
 
         model = SMDANet(
             input_dim=X_train.shape[-1]
         ).to(device)
-
+        
+        print(
+            "Model Device:",
+            next(model.parameters()).device
+        )
+        
         param_count = sum(
             p.numel()
             for p in model.parameters()
+        )
+
+        print(
+            f"Parameters: {param_count:,}"
         )
         
         criterion = nn.MSELoss()
@@ -96,31 +121,42 @@ for dataset in datasets:
             model.parameters(),
             lr=0.001
         )
-
         
         EPOCHS = 20
 
         train_start = time.time()
 
+
+        model.train()
+
         for epoch in range(EPOCHS):
-            optimizer.zero_grad()
-            reconstruction = model(
-                X_train_t
-            )
 
-            loss = criterion(
-                reconstruction,
-                X_train_t
-            )
+            epoch_loss = 0
 
-            loss.backward()
-            optimizer.step()
+            for (batch,) in train_loader:
+
+                batch = batch.to(device)
+
+                optimizer.zero_grad()
+            
+                reconstruction = model(batch)
+
+                loss = criterion(
+                    reconstruction,
+                    batch
+                )
+
+                loss.backward()
+
+                optimizer.step()
+
+                epoch_loss += loss.item()
 
             if (epoch + 1) % 5 == 0:
-                elapsed = time.time() - train_start
+                elapsed = (time.time() - train_start)
                 print(
                     f"Epoch {epoch+1}/{EPOCHS} | "
-                    f"Loss={loss.item():.6f} | "
+                    f"Loss={epoch_loss/len(train_loader):.6f} | "
                     f"Elapsed={elapsed:.1f}s"
                 )
 
@@ -130,17 +166,35 @@ for dataset in datasets:
 
         inference_start = time.time()
 
+        model.eval()
+
+        all_scores = []
+
         with torch.no_grad():
-            reconstruction = model(
-                X_test_t
-            )
-            scores = (
-                ((X_test_t - reconstruction) ** 2)
-                .mean(dim=(1,2))
-                .detach()
-                .cpu()
-                .numpy()
-            )
+
+            for (batch,) in test_loader:
+
+                batch = batch.to(device)
+
+                reconstruction = model(
+                    batch
+                )
+
+                batch_scores = (
+                    ((batch - reconstruction) ** 2)
+                    .mean(dim=(1, 2))
+                    .detach()
+                    .cpu()
+                    .numpy()
+                )
+
+                all_scores.append(
+                    batch_scores
+                )
+
+        scores = np.concatenate(
+            all_scores
+        )
 
         inference_time = (
             time.time() - inference_start
@@ -164,10 +218,12 @@ for dataset in datasets:
         
         print(f"Completed {dataset}")
 
+        print(
+            f"Training Time: "
+            f"{training_time:.2f}s"
+        )
+
         del model
-        del X_train_t
-        del X_test_t
-        del reconstruction
         del scores
 
         if torch.cuda.is_available():

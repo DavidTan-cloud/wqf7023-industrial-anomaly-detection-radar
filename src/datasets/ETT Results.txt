@@ -307,3 +307,147 @@ Average AUC: 0.996365509630717
 Average Training Time: 8.69004076719284 seconds
 Average Inference Time: 0.05832022428512573 seconds
 Model Parameters: 20732
+
+SISVAE
+Using device: cuda
+
+ETTh1
+Train: (12094, 100, 7)
+Val: (2513, 100, 7)
+Test: (2513, 100, 7)
+Labels: (2513,)
+Normal Windows: 2149
+Anomaly Windows: 364
+Model Device: cuda:0
+Parameters: 42,215
+Epoch 5/20 | Loss=0.757879 | Elapsed=1.5s
+Epoch 10/20 | Loss=0.716257 | Elapsed=2.7s
+Epoch 15/20 | Loss=0.692609 | Elapsed=3.9s
+Epoch 20/20 | Loss=0.683641 | Elapsed=5.1s
+Completed ETTh1
+Training Time: 5.12s
+
+ETTh2
+Train: (12094, 100, 7)
+Val: (2513, 100, 7)
+Test: (2513, 100, 7)
+Labels: (2513,)
+Normal Windows: 1998
+Anomaly Windows: 515
+Model Device: cuda:0
+Parameters: 42,215
+Epoch 5/20 | Loss=0.536313 | Elapsed=1.2s
+Epoch 10/20 | Loss=0.468432 | Elapsed=2.4s
+Epoch 15/20 | Loss=0.452461 | Elapsed=3.6s
+Epoch 20/20 | Loss=0.436498 | Elapsed=4.8s
+Completed ETTh2
+Training Time: 4.85s
+
+ETTm1
+Train: (48676, 100, 7)
+Val: (10352, 100, 7)
+Test: (10352, 100, 7)
+Labels: (10352,)
+Normal Windows: 9807
+Anomaly Windows: 545
+Model Device: cuda:0
+Parameters: 42,215
+Epoch 5/20 | Loss=0.659849 | Elapsed=5.1s
+Epoch 10/20 | Loss=0.638252 | Elapsed=10.3s
+Epoch 15/20 | Loss=0.646161 | Elapsed=15.4s
+Epoch 20/20 | Loss=0.622776 | Elapsed=20.6s
+Completed ETTm1
+Training Time: 20.57s
+
+ETTm2
+Train: (48676, 100, 7)
+Val: (10352, 100, 7)
+Test: (10352, 100, 7)
+Labels: (10352,)
+Normal Windows: 9807
+Anomaly Windows: 545
+Model Device: cuda:0
+Parameters: 42,215
+Epoch 5/20 | Loss=0.402077 | Elapsed=5.2s
+Epoch 10/20 | Loss=0.370972 | Elapsed=10.4s
+Epoch 15/20 | Loss=0.372320 | Elapsed=15.6s
+Epoch 20/20 | Loss=0.371236 | Elapsed=20.9s
+Completed ETTm2
+Training Time: 20.89s
+Average F1: 0.6136576429325148
+Average AUC: 0.9825941547177495
+Average Training Time: 12.855551540851593 seconds
+Average Inference Time: 0.06431043148040771 seconds
+Model Parameters: 42215
+
+SMDA-Net
+Using device: cuda
+
+ETTh1
+Train: (12094, 100, 7)
+Val: (2513, 100, 7)
+Test: (2513, 100, 7)
+Labels: (2513,)
+Normal Windows: 2149
+Anomaly Windows: 364
+Model Device: cuda:0
+Parameters: 137,991
+Epoch 5/20 | Loss=0.022769 | Elapsed=3.6s
+Epoch 10/20 | Loss=0.005750 | Elapsed=6.9s
+Epoch 15/20 | Loss=0.002538 | Elapsed=10.3s
+Epoch 20/20 | Loss=0.001608 | Elapsed=13.6s
+Completed ETTh1
+Training Time: 13.63s
+
+ETTh2
+Train: (12094, 100, 7)
+Val: (2513, 100, 7)
+Test: (2513, 100, 7)
+Labels: (2513,)
+Normal Windows: 1998
+Anomaly Windows: 515
+Model Device: cuda:0
+Parameters: 137,991
+Epoch 5/20 | Loss=0.026597 | Elapsed=3.4s
+Epoch 10/20 | Loss=0.007532 | Elapsed=6.8s
+Epoch 15/20 | Loss=0.003458 | Elapsed=10.1s
+Epoch 20/20 | Loss=0.002105 | Elapsed=13.5s
+Completed ETTh2
+Training Time: 13.50s
+
+ETTm1
+Train: (48676, 100, 7)
+Val: (10352, 100, 7)
+Test: (10352, 100, 7)
+Labels: (10352,)
+Normal Windows: 9807
+Anomaly Windows: 545
+Model Device: cuda:0
+Parameters: 137,991
+Epoch 5/20 | Loss=0.002139 | Elapsed=14.6s
+Epoch 10/20 | Loss=0.000669 | Elapsed=29.1s
+Epoch 15/20 | Loss=0.000319 | Elapsed=42.8s
+Epoch 20/20 | Loss=0.000187 | Elapsed=56.6s
+Completed ETTm1
+Training Time: 56.64s
+
+ETTm2
+Train: (48676, 100, 7)
+Val: (10352, 100, 7)
+Test: (10352, 100, 7)
+Labels: (10352,)
+Normal Windows: 9807
+Anomaly Windows: 545
+Model Device: cuda:0
+Parameters: 137,991
+Epoch 5/20 | Loss=0.002992 | Elapsed=13.9s
+Epoch 10/20 | Loss=0.000797 | Elapsed=27.9s
+Epoch 15/20 | Loss=0.000333 | Elapsed=41.8s
+Epoch 20/20 | Loss=0.000193 | Elapsed=55.8s
+Completed ETTm2
+Training Time: 55.80s
+Average F1: 0.71415545400206
+Average AUC: 1.0
+Average Training Time: 34.89302843809128 seconds
+Average Inference Time: 0.14944308996200562 seconds
+Model Parameters: 137991
