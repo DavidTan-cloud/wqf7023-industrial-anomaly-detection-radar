@@ -59,7 +59,6 @@ for dataset in datasets:
         print("Train:", X_train.shape)
         print("Val:", X_val.shape)
         print("Test:", X_test.shape)
-        print("Labels:", y_test.shape)
 
         print(
             "Normal Windows:",

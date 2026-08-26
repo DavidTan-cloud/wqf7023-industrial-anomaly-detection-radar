@@ -9,10 +9,7 @@ PROJECT_ROOT = os.path.abspath(
     )
 )
 
-sys.path.insert(
-    0,
-    PROJECT_ROOT
-)
+sys.path.insert(0, PROJECT_ROOT)
 
 import pandas as pd
 import numpy as np
@@ -41,20 +38,11 @@ datasets = [
     "ETTm2"
 ]
 
-os.makedirs(
-    "results/ETT",
-    exist_ok=True
-)
-
 results = []
 
 for dataset in datasets:
 
     try:
-
-        print("\n" + "=" * 50)
-        print(f"Processing {dataset}")
-        print("=" * 50)
 
         X_train = np.load(
             f"src/datasets/processed/ETT/{dataset}_X_train.npy"
@@ -72,6 +60,7 @@ for dataset in datasets:
             f"src/datasets/processed/ETT/{dataset}_y_test.npy"
         )
 
+        print(f"\n{dataset}")
         print("Train:", X_train.shape)
         print("Val:", X_val.shape)
         print("Test:", X_test.shape)
@@ -215,49 +204,23 @@ for dataset in datasets:
             - inference_start
         )
 
-        threshold = percentile_threshold(
-            scores,
-            percentile=95
-        )
+        threshold = percentile_threshold(scores, percentile=95)
+        preds = (scores > threshold).astype(int)
+        metrics = evaluate(y_test, preds, scores)
 
-        preds = (
-            scores > threshold
-        ).astype(int)
+        metrics["TrainingTime"] = (training_time)
+        metrics["InferenceTime"] = (inference_time)
+        metrics["Parameters"] = (param_count)
 
-        metrics = evaluate(
-            y_test,
-            preds,
-            scores
-        )
-
-        metrics["TrainingTime"] = (
-            training_time
-        )
-
-        metrics["InferenceTime"] = (
-            inference_time
-        )
-
-        metrics["Parameters"] = (
-            param_count
-        )
-
-        metrics["Dataset"] = (
-            dataset
-        )
-
-        results.append(
-            metrics
-        )
+        metrics["Dataset"] = (dataset)
+        results.append(metrics)
 
         pd.DataFrame(results).to_csv(
             "results/ETT/ett_lstm_ae_partial.csv",
             index=False
         )
 
-        print(
-            f"Completed {dataset}"
-        )
+        print(f"Completed {dataset}")
 
         print(
             f"Training Time: "
@@ -303,9 +266,7 @@ expected_cols = [
     "Parameters"
 ]
 
-results_df = results_df[
-    expected_cols
-]
+results_df = results_df[expected_cols]
 
 results_df.to_csv(
     "results/ETT/ett_lstm_ae_results.csv",
@@ -336,7 +297,5 @@ print(
 
 print(
     "Model Parameters:",
-    int(
-        results_df["Parameters"].iloc[0]
-    )
+    int(results_df["Parameters"].iloc[0])
 )
