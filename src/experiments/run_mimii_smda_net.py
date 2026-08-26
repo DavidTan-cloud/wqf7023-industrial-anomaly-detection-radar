@@ -27,139 +27,172 @@ print("Using device:", device)
 from src.evaluation.metrics import evaluate
 from src.evaluation.thresholding import percentile_threshold
 
+machines = [
+    "fan_id00",
+    "fan_id02",
+    "fan_id04",
+    "fan_id06",
+    "pump_id00",
+    "pump_id02",
+    "pump_id04",
+    "pump_id06",
+    "slider_id00",
+    "slider_id02",
+    "slider_id04",
+    "slider_id06",
+    "valve_id00",
+    "valve_id02",
+    "valve_id04",
+    "valve_id06"
+]
+
 results = []
 
-X_train = np.load(
-    "src/datasets/processed/MIMII/fan_id00_X_train.npy"
-)
+for machine in machines:
 
-X_val = np.load(
-    "src/datasets/processed/MIMII/fan_id00_X_val.npy"
-)
+    try:
 
-X_test = np.load(
-    "src/datasets/processed/MIMII/fan_id00_X_test.npy"
-)
-
-y_test = np.load(
-    "src/datasets/processed/MIMII/fan_id00_y_test.npy"
-)
-
-print("Train:", X_train.shape)
-print("Val:", X_val.shape)
-print("Test:", X_test.shape)
-print("Labels:", y_test.shape)
-
-print(
-    "Test Normals:",
-    np.sum(y_test == 0)
-)
-
-print(
-    "Test Anomalies:",
-    np.sum(y_test == 1)
-)
-
-X_train_t = torch.FloatTensor(
-    X_train
-).to(device)
-
-X_test_t = torch.FloatTensor(
-    X_test
-).to(device)
-
-
-model = SMDANet(
-    input_dim=X_train.shape[-1]
-).to(device)
-
-param_count = sum(
-    p.numel()
-    for p in model.parameters()
-)
-        
-criterion = nn.MSELoss()
-
-optimizer = torch.optim.Adam(
-    model.parameters(),
-    lr=0.001
-)
-
-        
-EPOCHS = 50
-
-train_start = time.time()
-
-for epoch in range(EPOCHS):
-    optimizer.zero_grad()
-    reconstruction = model(
-        X_train_t
-    )
-
-    loss = criterion(
-        reconstruction,
-        X_train_t
-    )
-
-    loss.backward()
-    optimizer.step()
-
-    if (epoch + 1) % 5 == 0:
-        elapsed = time.time() - train_start
-        print(
-            f"Epoch {epoch+1}/{EPOCHS} | "
-            f"Loss={loss.item():.6f} | "
-            f"Elapsed={elapsed:.1f}s"
+        X_train = np.load(
+            f"src/datasets/processed/MIMII/{machine}_X_train.npy"
         )
 
-training_time = (
-    time.time() - train_start
-)
+        X_val = np.load(
+            f"src/datasets/processed/MIMII/{machine}_X_val.npy"
+        )
 
-inference_start = time.time()
+        X_test = np.load(
+            f"src/datasets/processed/MIMII/{machine}_X_test.npy"
+        )
 
-with torch.no_grad():
-    reconstruction = model(
-        X_test_t
-    )
-    scores = (
-        ((X_test_t - reconstruction) ** 2)
-        .mean(dim=(1,2))
-        .detach()
-        .cpu()
-        .numpy()
-    )
+        y_test = np.load(
+            f"src/datasets/processed/MIMII/{machine}_y_test.npy"
+        )
 
-inference_time = (
-    time.time() - inference_start
-)
+        print(f"\n{machine}")
+        print("Train:", X_train.shape)
+        print("Val:", X_val.shape)
+        print("Test:", X_test.shape)
+        print("Labels:", y_test.shape)
 
-threshold = percentile_threshold(scores, percentile=95)
-preds = (scores > threshold).astype(int)
-metrics = evaluate(y_test, preds, scores)
+        print(
+            "Test Normals:",
+            np.sum(y_test == 0)
+        )
 
-metrics["TrainingTime"] = training_time
-metrics["InferenceTime"] = inference_time
-metrics["Parameters"] = param_count
+        print(
+            "Test Anomalies:",
+            np.sum(y_test == 1)
+        )
 
-metrics["Machine"] = "fan_id00"
-results.append(metrics)
+        X_train_t = torch.FloatTensor(
+            X_train
+        ).to(device)
+
+        X_test_t = torch.FloatTensor(
+            X_test
+        ).to(device)
+
+
+        model = SMDANet(
+            input_dim=X_train.shape[-1]
+        ).to(device)
+
+        param_count = sum(
+            p.numel()
+            for p in model.parameters()
+        )
         
-pd.DataFrame(results).to_csv(
-    "results/MIMII/mimii_smda_net_partial.csv",
-    index=False
-)
+        criterion = nn.MSELoss()
+
+        optimizer = torch.optim.Adam(
+            model.parameters(),
+            lr=0.001
+        )
+
         
-print("Completed fan_id00")
+        EPOCHS = 50
 
-del model
-del X_train_t
-del X_test_t
-del reconstruction
-del scores
+        train_start = time.time()
 
-if torch.cuda.is_available():
-    torch.cuda.empty_cache()
+        for epoch in range(EPOCHS):
+            optimizer.zero_grad()
+            reconstruction = model(
+                X_train_t
+            )
+
+            loss = criterion(
+                reconstruction,
+                X_train_t
+            )
+
+            loss.backward()
+            optimizer.step()
+
+            if (epoch + 1) % 5 == 0:
+                elapsed = time.time() - train_start
+                print(
+                    f"Epoch {epoch+1}/{EPOCHS} | "
+                    f"Loss={loss.item():.6f} | "
+                    f"Elapsed={elapsed:.1f}s"
+                )
+
+        training_time = (
+            time.time() - train_start
+        )
+
+        inference_start = time.time()
+
+        with torch.no_grad():
+            reconstruction = model(
+                X_test_t
+            )
+            scores = (
+                ((X_test_t - reconstruction) ** 2)
+                .mean(dim=(1,2))
+                .detach()
+                .cpu()
+                .numpy()
+            )
+
+        inference_time = (
+            time.time() - inference_start
+        )
+
+        threshold = percentile_threshold(scores, percentile=95)
+        preds = (scores > threshold).astype(int)
+        metrics = evaluate(y_test, preds, scores)
+
+        metrics["TrainingTime"] = training_time
+        metrics["InferenceTime"] = inference_time
+        metrics["Parameters"] = param_count
+
+        metrics["Machine"] = machine
+        results.append(metrics)
+        
+        pd.DataFrame(results).to_csv(
+            "results/MIMII/mimii_smda_net_partial.csv",
+            index=False
+        )
+        
+        print(f"Completed {machine}")
+
+        del model
+        del X_train_t
+        del X_test_t
+        del reconstruction
+        del scores
+
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+
+    except Exception as e:
+
+        print(
+            f"Failed {machine}: {e}"
+        )
+
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
 results_df = pd.DataFrame(results)
 
