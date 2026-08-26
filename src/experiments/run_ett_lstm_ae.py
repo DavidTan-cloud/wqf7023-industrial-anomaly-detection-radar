@@ -9,11 +9,19 @@ PROJECT_ROOT = os.path.abspath(
     )
 )
 
-sys.path.insert(0, PROJECT_ROOT)
+sys.path.insert(
+    0,
+    PROJECT_ROOT
+)
 
 import pandas as pd
 import numpy as np
 import torch
+
+from torch.utils.data import (
+    TensorDataset,
+    DataLoader
+)
 
 device = torch.device(
     "cuda" if torch.cuda.is_available() else "cpu"
@@ -33,11 +41,20 @@ datasets = [
     "ETTm2"
 ]
 
+os.makedirs(
+    "results/ETT",
+    exist_ok=True
+)
+
 results = []
 
 for dataset in datasets:
 
     try:
+
+        print("\n" + "=" * 50)
+        print(f"Processing {dataset}")
+        print("=" * 50)
 
         X_train = np.load(
             f"src/datasets/processed/ETT/{dataset}_X_train.npy"
@@ -55,8 +72,6 @@ for dataset in datasets:
             f"src/datasets/processed/ETT/{dataset}_y_test.npy"
         )
 
-        print(f"\n{dataset}")
-
         print("Train:", X_train.shape)
         print("Val:", X_val.shape)
         print("Test:", X_test.shape)
@@ -71,13 +86,25 @@ for dataset in datasets:
             np.sum(y_test == 1)
         )
 
-        X_train_t = torch.FloatTensor(
-            X_train
-        ).to(device)
+        train_dataset = TensorDataset(
+            torch.FloatTensor(X_train)
+        )
 
-        X_test_t = torch.FloatTensor(
-            X_test
-        ).to(device)
+        train_loader = DataLoader(
+            train_dataset,
+            batch_size=256,
+            shuffle=True
+        )
+
+        test_dataset = TensorDataset(
+            torch.FloatTensor(X_test)
+        )
+
+        test_loader = DataLoader(
+            test_dataset,
+            batch_size=256,
+            shuffle=False
+        )
 
         model = LSTMAE(
             input_dim=X_train.shape[-1]
@@ -93,6 +120,10 @@ for dataset in datasets:
             for p in model.parameters()
         )
 
+        print(
+            f"Parameters: {param_count:,}"
+        )
+
         optimizer = torch.optim.Adam(
             model.parameters(),
             lr=0.001
@@ -100,104 +131,186 @@ for dataset in datasets:
 
         criterion = torch.nn.MSELoss()
 
+        EPOCHS = 20
+
         train_start = time.time()
 
-        EPOCHS = 20
+        model.train()
+
         for epoch in range(EPOCHS):
-            optimizer.zero_grad()
-            output = model(X_train_t)
 
-            loss = criterion(output, X_train_t)
+            epoch_loss = 0
 
-            loss.backward()
-            optimizer.step()
+            for (batch,) in train_loader:
+
+                batch = batch.to(device)
+
+                optimizer.zero_grad()
+
+                output = model(batch)
+
+                loss = criterion(
+                    output,
+                    batch
+                )
+
+                loss.backward()
+
+                optimizer.step()
+
+                epoch_loss += loss.item()
 
             if (epoch + 1) % 5 == 0:
-                elapsed = time.time() - train_start
+
+                elapsed = (
+                    time.time()
+                    - train_start
+                )
+
                 print(
                     f"Epoch {epoch+1}/{EPOCHS} | "
-                    f"Loss={loss.item():.6f} | "
+                    f"Loss={epoch_loss/len(train_loader):.6f} | "
                     f"Elapsed={elapsed:.1f}s"
                 )
 
         training_time = (
-            time.time() - train_start
+            time.time()
+            - train_start
         )
 
         inference_start = time.time()
 
-        with torch.no_grad():
-            reconstruction = model(X_test_t)
-            scores = (
-                ((X_test_t - reconstruction) ** 2)
-                .mean(dim=(1,2))
-                .detach()
-                .cpu()
-                .numpy()
-            )
+        model.eval()
 
-        inference_time = (
-            time.time() - inference_start
+        all_scores = []
+
+        with torch.no_grad():
+
+            for (batch,) in test_loader:
+
+                batch = batch.to(device)
+
+                reconstruction = model(
+                    batch
+                )
+
+                batch_scores = (
+                    ((batch - reconstruction) ** 2)
+                    .mean(dim=(1, 2))
+                    .detach()
+                    .cpu()
+                    .numpy()
+                )
+
+                all_scores.append(
+                    batch_scores
+                )
+
+        scores = np.concatenate(
+            all_scores
         )
 
-        threshold = percentile_threshold(scores, percentile=95)
-        preds = (scores > threshold).astype(int)
-        metrics = evaluate(y_test, preds, scores)
+        inference_time = (
+            time.time()
+            - inference_start
+        )
 
-        metrics["TrainingTime"] = training_time
-        metrics["InferenceTime"] = inference_time
-        metrics["Parameters"] = param_count
+        threshold = percentile_threshold(
+            scores,
+            percentile=95
+        )
 
-        metrics["Dataset"] = dataset
-        results.append(metrics)
-        
+        preds = (
+            scores > threshold
+        ).astype(int)
+
+        metrics = evaluate(
+            y_test,
+            preds,
+            scores
+        )
+
+        metrics["TrainingTime"] = (
+            training_time
+        )
+
+        metrics["InferenceTime"] = (
+            inference_time
+        )
+
+        metrics["Parameters"] = (
+            param_count
+        )
+
+        metrics["Dataset"] = (
+            dataset
+        )
+
+        results.append(
+            metrics
+        )
+
         pd.DataFrame(results).to_csv(
             "results/ETT/ett_lstm_ae_partial.csv",
             index=False
         )
-        
-        print(f"Completed {dataset}")
+
+        print(
+            f"Completed {dataset}"
+        )
+
+        print(
+            f"Training Time: "
+            f"{training_time:.2f}s"
+        )
 
         del model
-        del X_train_t
-        del X_test_t
-        del reconstruction
+        del scores
 
         if torch.cuda.is_available():
+
             torch.cuda.empty_cache()
 
     except Exception as e:
+
         print(
             f"Failed {dataset}: {e}"
         )
 
         if torch.cuda.is_available():
+
             torch.cuda.empty_cache()
 
-results_df = pd.DataFrame(results)
+results_df = pd.DataFrame(
+    results
+)
+
+if results_df.empty:
+
+    raise RuntimeError(
+        "No successful ETT LSTM-AE runs completed."
+    )
+
+expected_cols = [
+    "Dataset",
+    "Accuracy",
+    "Precision",
+    "Recall",
+    "F1",
+    "AUC",
+    "TrainingTime",
+    "InferenceTime",
+    "Parameters"
+]
 
 results_df = results_df[
-    [
-        "Dataset",
-        "Accuracy",
-        "Precision",
-        "Recall",
-        "F1",
-        "AUC",
-        "TrainingTime",
-        "InferenceTime",
-        "Parameters"
-    ]
+    expected_cols
 ]
 
 results_df.to_csv(
     "results/ETT/ett_lstm_ae_results.csv",
     index=False
 )
-
-results_df.head()
-
-results_df.describe()
 
 print(
     "Average F1:",
@@ -223,5 +336,7 @@ print(
 
 print(
     "Model Parameters:",
-    int(results_df["Parameters"].iloc[0])
+    int(
+        results_df["Parameters"].iloc[0]
+    )
 )
