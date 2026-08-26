@@ -1,34 +1,30 @@
-import pandas as pd
+import os
+import sys
 
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(
+        os.path.dirname(__file__),
+        "../.."
+    )
+)
 
-class ETTLoader:
+sys.path.insert(
+    0,
+    PROJECT_ROOT
+)
 
-    def __init__(
-        self,
-        csv_path
-    ):
+from src.datasets.ett_loader import ETTLoader
 
-        self.csv_path = csv_path
+loader = ETTLoader(
+    csv_path="src/datasets/raw/ETT/ETTh1.csv"
+)
 
-    def load(self):
+df = loader.load()
 
-        df = pd.read_csv(
-            self.csv_path
-        )
+print(df.head())
 
-        return df
+print(df.shape)
 
-    def get_features(
-        self,
-        drop_date=True
-    ):
+X = loader.get_features()
 
-        df = self.load()
-
-        if drop_date and "date" in df.columns:
-
-            df = df.drop(
-                columns=["date"]
-            )
-
-        return df.values
+print(X.shape)
