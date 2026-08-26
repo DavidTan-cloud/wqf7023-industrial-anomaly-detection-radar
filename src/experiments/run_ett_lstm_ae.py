@@ -26,52 +26,50 @@ from src.models.lstm_ae import LSTMAE
 from src.evaluation.metrics import evaluate
 from src.evaluation.thresholding import percentile_threshold
 
-machines = [
-    "fan_id00",
-    "fan_id02",
-    "fan_id04",
-    "fan_id06",
-    "pump_id00",
-    "pump_id02",
-    "pump_id04",
-    "pump_id06",
-    "slider_id00",
-    "slider_id02",
-    "slider_id04",
-    "slider_id06",
-    "valve_id00",
-    "valve_id02",
-    "valve_id04",
-    "valve_id06",
+datasets = [
+    "ETTh1",
+    "ETTh2",
+    "ETTm1",
+    "ETTm2"
 ]
 
 results = []
 
-for machine in machines:
+for dataset in datasets:
 
     try:
-        
+
         X_train = np.load(
-            f"src/datasets/processed/MIMII/{machine}_X_train.npy"
+            f"src/datasets/processed/ETT/{dataset}_X_train.npy"
         )
 
         X_val = np.load(
-            f"src/datasets/processed/MIMII/{machine}_X_val.npy"
+            f"src/datasets/processed/ETT/{dataset}_X_val.npy"
         )
 
         X_test = np.load(
-            f"src/datasets/processed/MIMII/{machine}_X_test.npy"
+            f"src/datasets/processed/ETT/{dataset}_X_test.npy"
         )
 
         y_test = np.load(
-            f"src/datasets/processed/MIMII/{machine}_y_test.npy"
+            f"src/datasets/processed/ETT/{dataset}_y_test.npy"
         )
 
-        print(f"\n{machine}")
+        print(f"\n{dataset}")
+
         print("Train:", X_train.shape)
         print("Val:", X_val.shape)
         print("Test:", X_test.shape)
-        print("Labels:", y_test.shape)
+
+        print(
+            "Normal Windows:",
+            np.sum(y_test == 0)
+        )
+
+        print(
+            "Anomaly Windows:",
+            np.sum(y_test == 1)
+        )
 
         X_train_t = torch.FloatTensor(
             X_train
@@ -104,7 +102,7 @@ for machine in machines:
 
         train_start = time.time()
 
-        EPOCHS = 50
+        EPOCHS = 20
         for epoch in range(EPOCHS):
             optimizer.zero_grad()
             output = model(X_train_t)
@@ -150,15 +148,15 @@ for machine in machines:
         metrics["InferenceTime"] = inference_time
         metrics["Parameters"] = param_count
 
-        metrics["Machine"] = machine
+        metrics["Dataset"] = dataset
         results.append(metrics)
         
         pd.DataFrame(results).to_csv(
-            "results/MIMII/mimii_lstm_ae_partial.csv",
+            "results/ETT/ett_lstm_ae_partial.csv",
             index=False
         )
         
-        print(f"Completed {machine}")
+        print(f"Completed {dataset}")
 
         del model
         del X_train_t
@@ -170,14 +168,17 @@ for machine in machines:
 
     except Exception as e:
         print(
-            f"Failed {machine}: {e}"
+            f"Failed {dataset}: {e}"
         )
+
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
 results_df = pd.DataFrame(results)
 
 results_df = results_df[
     [
-        "Machine",
+        "Dataset",
         "Accuracy",
         "Precision",
         "Recall",
@@ -190,7 +191,7 @@ results_df = results_df[
 ]
 
 results_df.to_csv(
-    "results/MIMII/mimii_lstm_ae_results.csv",
+    "results/ETT/ett_lstm_ae_results.csv",
     index=False
 )
 
