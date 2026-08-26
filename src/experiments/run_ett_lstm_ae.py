@@ -150,12 +150,7 @@ for dataset in datasets:
                 epoch_loss += loss.item()
 
             if (epoch + 1) % 5 == 0:
-
-                elapsed = (
-                    time.time()
-                    - train_start
-                )
-
+                elapsed = (time.time() - train_start)
                 print(
                     f"Epoch {epoch+1}/{EPOCHS} | "
                     f"Loss={epoch_loss/len(train_loader):.6f} | "
@@ -163,8 +158,7 @@ for dataset in datasets:
                 )
 
         training_time = (
-            time.time()
-            - train_start
+            time.time() - train_start
         )
 
         inference_start = time.time()
@@ -200,8 +194,7 @@ for dataset in datasets:
         )
 
         inference_time = (
-            time.time()
-            - inference_start
+            time.time() - inference_start
         )
 
         threshold = percentile_threshold(scores, percentile=95)
@@ -231,7 +224,6 @@ for dataset in datasets:
         del scores
 
         if torch.cuda.is_available():
-
             torch.cuda.empty_cache()
 
     except Exception as e:
@@ -241,7 +233,6 @@ for dataset in datasets:
         )
 
         if torch.cuda.is_available():
-
             torch.cuda.empty_cache()
 
 results_df = pd.DataFrame(

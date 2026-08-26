@@ -16,6 +16,11 @@ import numpy as np
 import torch
 import torch.nn as nn
 
+from torch.utils.data import (
+    TensorDataset,
+    DataLoader
+)
+
 device = torch.device(
     "cuda" if torch.cuda.is_available() else "cpu"
 )
@@ -72,22 +77,43 @@ for dataset in datasets:
             np.sum(y_test == 1)
         )
 
-        X_train_t = torch.FloatTensor(
-            X_train
-        ).to(device)
+        train_dataset = TensorDataset(
+            torch.FloatTensor(X_train)
+        )
 
-        X_test_t = torch.FloatTensor(
-            X_test
-        ).to(device)
+        train_loader = DataLoader(
+            train_dataset,
+            batch_size=256,
+            shuffle=True
+        )
+
+        test_dataset = TensorDataset(
+            torch.FloatTensor(X_test)
+        )
+
+        test_loader = DataLoader(
+            test_dataset,
+            batch_size=256,
+            shuffle=False
+        )
 
         model = SISVAE(
             input_dim=X_train.shape[-1],
             latent_dim=16
         ).to(device)
+        
+        print(
+            "Model Device:",
+            next(model.parameters()).device
+        )
 
         param_count = sum(
             p.numel()
             for p in model.parameters()
+        )
+
+        print(
+            f"Parameters: {param_count:,}"
         )
         
         def vae_loss(recon_x, x, mu, logvar):
@@ -97,7 +123,6 @@ for dataset in datasets:
             )
             return recon_loss + kl_loss
 
-        
         optimizer = torch.optim.Adam(
             model.parameters(),
             lr=0.001
@@ -107,45 +132,69 @@ for dataset in datasets:
 
         train_start = time.time()
 
+        model.train()
+
         for epoch in range(EPOCHS):
-            
-            optimizer.zero_grad()
 
-            recon, mu, logvar = model(X_train_t)
+            epoch_loss = 0
 
-            loss = vae_loss(recon, X_train_t, mu, logvar)
+            for (batch,) in train_loader:
 
-            loss.backward()
-            optimizer.step()
+                batch = batch.to(device)
 
-            if (epoch + 1) % 5 == 0:
-                elapsed = time.time() - train_start
-                print(
-                    f"Epoch {epoch+1}/{EPOCHS} | "
-                    f"Loss={loss.item():.6f} | "
-                    f"Elapsed={elapsed:.1f}s"
-                )
+                optimizer.zero_grad()
+
+                recon, mu, logvar = model(batch)
+
+                loss = vae_loss(recon, batch, mu, logvar)
+
+                loss.backward()
+                optimizer.step()
+
+                if (epoch + 1) % 5 == 0:
+                    elapsed = (time.time() - train_start)
+                    print(
+                        f"Epoch {epoch+1}/{EPOCHS} | "
+                        f"Loss={epoch_loss/len(train_loader):.6f} | "
+                        f"Elapsed={elapsed:.1f}s"
+                    )
 
         training_time = (
             time.time() - train_start
         )
 
         inference_start = time.time()
+
+        model.eval()
+
+        all_scores = []
  
         with torch.no_grad():
 
-            recon, mu, logvar = model(X_test_t)
+            for (batch,) in test_loader:
 
-            recon_error = (
-                (X_test_t - recon) ** 2
-            ).mean(dim=(1,2))
+                batch = batch.to(device)
 
-            kl_div = -0.5 * torch.sum(
-                1 + logvar - mu.pow(2) - logvar.exp(),
-                dim=1
-            )
+                recon, mu, logvar = model(batch)
 
-            scores = (recon_error + kl_div).detach().cpu().numpy()
+                recon_error = (
+                    (batch - recon) ** 2
+                ).mean(dim=(1,2))
+
+                kl_div = -0.5 * torch.sum(
+                    1 + logvar - mu.pow(2) - logvar.exp(),
+                    dim=1
+                )
+
+                batch_scores = (recon_error + kl_div).detach().cpu().numpy()
+                
+                all_scores.append(
+                    batch_scores
+                )
+
+        scores = np.concatenate(
+            all_scores
+        )
 
         inference_time = (
             time.time() - inference_start
@@ -169,12 +218,13 @@ for dataset in datasets:
         
         print(f"Completed {dataset}")
 
+        print(
+            f"Training Time: "
+            f"{training_time:.2f}s"
+        )
+
         del model
-        del X_train_t
-        del X_test_t
-        del recon
-        del mu
-        del logvar
+        del scores
 
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
