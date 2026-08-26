@@ -31,212 +31,244 @@ loader = MIMIILoader(
 processor = MIMIIPreprocessor()
 
 # Load files
-normal_files, anomaly_files = loader.load_machine(
-    dataset_name="0_dB_fan",
-    machine_id="00"
-)
+machines = {
+    "fan":    ["00","02","04","06"],
+    "pump":   ["00","02","04","06"],
+    "slider": ["00","02","04","06"],
+    "valve":  ["00","02","04","06"]
+}
 
-print(
-    f"Normal files: {len(normal_files)}"
-)
+for machine_type, ids in machines.items():
 
-print(
-    f"Anomaly files: {len(anomaly_files)}"
-)
+    dataset_name = f"0_dB_{machine_type}"
 
-train_normal, temp_normal = train_test_split(
-    normal_files,
-    test_size=0.30,
-    random_state=42
-)
+    for machine_id in ids:
+        
+        try:
+            
+            print(
+                f"\nProcessing "
+                f"{machine_type}_id{machine_id}"
+            )
 
-val_normal, test_normal = train_test_split(
-    temp_normal,
-    test_size=0.50,
-    random_state=42
-)
+            normal_files, anomaly_files = loader.load_machine(
+                dataset_name=dataset_name,
+                machine_id=machine_id
+            )
 
-X_train = []
+            print(
+                f"Normal files: {len(normal_files)}"
+            )
 
-for file in train_normal:
+            print(
+                f"Anomaly files: {len(anomaly_files)}"
+            )
 
-    feature = processor.extract_features(
-        file
-    )
+            train_normal, temp_normal = train_test_split(
+                normal_files,
+                test_size=0.30,
+                random_state=42
+            )
 
-    X_train.append(
-        feature
-    )
+            val_normal, test_normal = train_test_split(
+                temp_normal,
+                test_size=0.50,
+                random_state=42
+            )
 
-X_train = np.array(
-    X_train
-)
+            X_train = []
 
-test_files = (
-    test_normal
-    + anomaly_files
-)
+            for file in train_normal:
 
-X_test = []
+                feature = processor.extract_features(
+                    file
+                )
 
-for file in test_files:
+                X_train.append(
+                    feature
+                )
 
-    feature = processor.extract_features(
-        file
-    )
+            X_train = np.array(
+                X_train
+            )
 
-    X_test.append(
-        feature
-    )
+            test_files = (
+                test_normal
+                + anomaly_files
+            )
 
-X_test = np.array(
-    X_test
-)
+            X_test = []
 
-y_train = np.zeros(
-    len(X_train)
-)
+            for file in test_files:
 
-y_test = []
+                feature = processor.extract_features(
+                    file
+                )
 
-for file in test_files:
+                X_test.append(
+                    feature
+                )
 
-    if "abnormal" in file:
-        y_test.append(1)
-    else:
-        y_test.append(0)
+            X_test = np.array(
+                X_test
+            )
 
-y_test = np.array(
-    y_test
-)
+            y_train = np.zeros(
+                len(X_train)
+            )
 
-scaler = DataNormalizer()
+            y_test = []
 
-X_train_2d = X_train.reshape(
-    -1,
-    X_train.shape[-1]
-)
+            for file in test_files:
 
-X_train_2d = scaler.fit_transform(
-    X_train_2d
-)
+                if "abnormal" in file:
+                    y_test.append(1)
+                else:
+                    y_test.append(0)
 
-X_train = X_train_2d.reshape(
-    X_train.shape
-)
+            y_test = np.array(
+                y_test
+            )
 
-X_test_2d = X_test.reshape(
-    -1,
-    X_test.shape[-1]
-)
+            scaler = DataNormalizer()
 
-X_test_2d = scaler.transform(
-    X_test_2d
-)
+            X_train_2d = X_train.reshape(
+                -1,
+                X_train.shape[-1]
+            )
 
-X_test = X_test_2d.reshape(
-    X_test.shape
-)
+            X_train_2d = scaler.fit_transform(
+                X_train_2d
+            )
 
-X_val = []
+            X_train = X_train_2d.reshape(
+                X_train.shape
+            )
 
-for file in val_normal:
+            X_test_2d = X_test.reshape(
+                -1,
+                X_test.shape[-1]
+            )
 
-    feature = processor.extract_features(
-        file
-    )
+            X_test_2d = scaler.transform(
+                X_test_2d
+            )
 
-    X_val.append(
-        feature
-    )
+            X_test = X_test_2d.reshape(
+                X_test.shape
+            )
 
-X_val = np.array(
-    X_val
-)
+            X_val = []
 
-y_val = np.zeros(
-    len(X_val)
-)
+            for file in val_normal:
 
-X_val_2d = X_val.reshape(
-    -1,
-    X_val.shape[-1]
-)
+                feature = processor.extract_features(
+                    file
+                )
 
-X_val_2d = scaler.transform(
-    X_val_2d
-)
+                X_val.append(
+                    feature
+                )
 
-X_val = X_val_2d.reshape(
-    X_val.shape
-)
+            X_val = np.array(
+                X_val
+            )
 
-os.makedirs(
-    "src/datasets/processed/MIMII",
-    exist_ok=True
-)
+            y_val = np.zeros(
+                len(X_val)
+            )
 
-np.save(
-    "src/datasets/processed/MIMII/fan_id00_X_train.npy",
-    X_train
-)
+            X_val_2d = X_val.reshape(
+                -1,
+                X_val.shape[-1]
+            )
 
-np.save(
-    "src/datasets/processed/MIMII/fan_id00_y_train.npy",
-    y_train
-)
+            X_val_2d = scaler.transform(
+                X_val_2d
+            )
 
-np.save(
-    "src/datasets/processed/MIMII/fan_id00_X_test.npy",
-    X_test
-)
+            X_val = X_val_2d.reshape(
+                X_val.shape
+            )
 
-np.save(
-    "src/datasets/processed/MIMII/fan_id00_y_test.npy",
-    y_test
-)
+            os.makedirs(
+                "src/datasets/processed/MIMII",
+                exist_ok=True
+            )
 
-np.save(
-    "src/datasets/processed/MIMII/fan_id00_X_val.npy",
-    X_val
-)
+            np.save(
+                f"src/datasets/processed/MIMII/{machine_type}_id{machine_id}_X_train.npy",
+                X_train
+            )
 
-np.save(
-    "src/datasets/processed/MIMII/fan_id00_y_val.npy",
-    y_val
-)
+            np.save(
+                f"src/datasets/processed/MIMII/{machine_type}_id{machine_id}_y_train.npy",
+                y_train
+            )
 
-joblib.dump(
-    scaler,
-    "src/datasets/processed/MIMII/fan_id00_scaler.pkl"
-)
+            np.save(
+                f"src/datasets/processed/MIMII/{machine_type}_id{machine_id}_X_test.npy",
+                X_test
+            )
 
-print("Train Normal:", len(train_normal))
-print("Validation Normal:", len(val_normal))
-print("Test Normal:", len(test_normal))
-print("Anomaly:", len(anomaly_files))
+            np.save(
+                f"src/datasets/processed/MIMII/{machine_type}_id{machine_id}_y_test.npy",
+                y_test
+            )
 
-print(X_train.shape)
-print(X_test.shape)
-print(y_train.shape)
-print(y_test.shape)
-print(X_val.shape)
-print(y_val.shape)
+            np.save(
+                f"src/datasets/processed/MIMII/{machine_type}_id{machine_id}_X_val.npy",
+                X_val
+            )
 
-print(
-    "Test Normals:",
-    np.sum(y_test == 0)
-)
+            np.save(
+                f"src/datasets/processed/MIMII/{machine_type}_id{machine_id}_y_val.npy",
+                y_val
+            )
 
-print(
-    "Test Anomalies:",
-    np.sum(y_test == 1)
-)
+            joblib.dump(
+                scaler,
+                f"src/datasets/processed/MIMII/{machine_type}_id{machine_id}_scaler.pkl"
+            )
+            
+            print(
+                f"Completed "
+                f"{machine_type}_id{machine_id}"
+            )
 
-print(
-    f"Normal files: {len(normal_files)}"
-)
+            print(f"{machine_type}_id{machine_id}")
+            print("Train Normal:", len(train_normal))
+            print("Validation Normal:", len(val_normal))
+            print("Test Normal:", len(test_normal))
+            print("Anomaly:", len(anomaly_files))
 
-print(
-    f"Anomaly files: {len(anomaly_files)}"
-)
+            print(X_train.shape)
+            print(X_test.shape)
+            print(y_train.shape)
+            print(y_test.shape)
+            print(X_val.shape)
+            print(y_val.shape)
+
+            print(
+                "Test Normals:",
+                np.sum(y_test == 0)
+            )
+
+            print(
+                "Test Anomalies:",
+                np.sum(y_test == 1)
+            )
+
+            print(
+                f"Normal files: {len(normal_files)}"
+            )
+
+            print(
+                f"Anomaly files: {len(anomaly_files)}"
+            )
+        
+        except Exception as e:
+            print(
+                f"Failed "
+                f"{machine_type}_id{machine_id}: {e}"
+            )
