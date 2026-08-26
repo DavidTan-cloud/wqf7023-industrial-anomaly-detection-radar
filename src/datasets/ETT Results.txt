@@ -1,0 +1,241 @@
+ETTh1
+Train: (12094, 100, 7)
+Val: (2513, 100, 7)
+Test: (2513, 100, 7)
+Normal Windows: 2149
+Anomaly Windows: 364
+Completed ETTh1
+
+ETTh2
+Train: (12094, 100, 7)
+Val: (2513, 100, 7)
+Test: (2513, 100, 7)
+Normal Windows: 1998
+Anomaly Windows: 515
+Completed ETTh2
+
+ETTm1
+Train: (48676, 100, 7)
+Val: (10352, 100, 7)
+Test: (10352, 100, 7)
+Normal Windows: 9807
+Anomaly Windows: 545
+Completed ETTm1
+
+ETTm2
+Train: (48676, 100, 7)
+Val: (10352, 100, 7)
+Test: (10352, 100, 7)
+Normal Windows: 9807
+Anomaly Windows: 545
+Completed ETTm2
+LADOP Average F1: 0.6826408726285887
+LADOP Average AUC: 0.9898221184249658
+Average Training Time: 0.005513250827789307 seconds
+Average Inference Time: 0.015726685523986816 seconds
+Model Parameters: 0
+
+Using device: cuda
+
+ETTh1
+Train: (12094, 100, 7)
+Val: (2513, 100, 7)
+Test: (2513, 100, 7)
+Normal Windows: 2149
+Anomaly Windows: 364
+Model Device: cuda:0
+Failed ETTh1: CUDA out of memory. Tried to allocate 6.12 GiB. GPU 0 has a total capacity of 8.00 GiB of which 0 bytes is free. Of the allocated memory 2.20 GiB is allocated by PyTorch, and 5.74 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+ETTh2
+Train: (12094, 100, 7)
+Val: (2513, 100, 7)
+Test: (2513, 100, 7)
+Normal Windows: 1998
+Anomaly Windows: 515
+Model Device: cuda:0
+Failed ETTh2: CUDA out of memory. Tried to allocate 6.12 GiB. GPU 0 has a total capacity of 8.00 GiB of which 0 bytes is free. Of the allocated memory 2.20 GiB is allocated by PyTorch, and 5.74 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+ETTm1
+Train: (48676, 100, 7)
+Val: (10352, 100, 7)
+Test: (10352, 100, 7)
+Normal Windows: 9807
+Anomaly Windows: 545
+Model Device: cuda:0
+Failed ETTm1: CUDA out of memory. Tried to allocate 24.60 GiB. GPU 0 has a total capacity of 8.00 GiB of which 0 bytes is free. Of the allocated memory 3.32 GiB is allocated by PyTorch, and 4.62 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+ETTm2
+Train: (48676, 100, 7)
+Val: (10352, 100, 7)
+Test: (10352, 100, 7)
+Normal Windows: 9807
+Anomaly Windows: 545
+Model Device: cuda:0
+Failed ETTm2: CUDA out of memory. Tried to allocate 24.60 GiB. GPU 0 has a total capacity of 8.00 GiB of which 0 bytes is free. Of the allocated memory 3.32 GiB is allocated by PyTorch, and 4.62 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\wqf7023-industrial-anomaly-detection-radar\src\experiments\run_ett_lstm_ae.py", line 179, in <module>
+    results_df = results_df[
+                 ~~~~~~~~~~^
+        [
+        ^
+    ...<9 lines>...
+        ]
+        ^
+    ]
+    ^
+  File "C:\Users\david\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\pandas\core\frame.py", line 4119, in __getitem__
+    indexer = self.columns._get_indexer_strict(key, "columns")[1]
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\david\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\pandas\core\indexes\base.py", line 6212, in _get_indexer_strict
+    self._raise_if_missing(keyarr, indexer, axis_name)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\david\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\pandas\core\indexes\base.py", line 6261, in _raise_if_missing
+    raise KeyError(f"None of [{key}] are in the [{axis_name}]")
+KeyError: "None of [Index(['Dataset', 'Accuracy', 'Precision', 'Recall', 'F1', 'AUC',\n       'TrainingTime', 'InferenceTime', 'Parameters'],\n      dtype='object')] are in the [columns]"
+
+Using device: cuda
+
+ETTh1
+Train: (12094, 100, 7)
+Val: (2513, 100, 7)
+Test: (2513, 100, 7)
+Labels: (2513,)
+Normal Windows: 2149
+Anomaly Windows: 364
+Input Dimension: 700
+AE 1 trained
+AE 2 trained
+AE 3 trained
+Completed ETTh1
+
+ETTh2
+Train: (12094, 100, 7)
+Val: (2513, 100, 7)
+Test: (2513, 100, 7)
+Labels: (2513,)
+Normal Windows: 1998
+Anomaly Windows: 515
+Input Dimension: 700
+AE 1 trained
+AE 2 trained
+AE 3 trained
+Completed ETTh2
+
+ETTm1
+Train: (48676, 100, 7)
+Val: (10352, 100, 7)
+Test: (10352, 100, 7)
+Labels: (10352,)
+Normal Windows: 9807
+Anomaly Windows: 545
+Input Dimension: 700
+AE 1 trained
+AE 2 trained
+AE 3 trained
+Completed ETTm1
+
+ETTm2
+Train: (48676, 100, 7)
+Val: (10352, 100, 7)
+Test: (10352, 100, 7)
+Labels: (10352,)
+Normal Windows: 9807
+Anomaly Windows: 545
+Input Dimension: 700
+AE 1 trained
+AE 2 trained
+AE 3 trained
+Completed ETTm2
+Average F1: 0.7061592169371494
+Average AUC: 0.9957891138238608
+Average Training Time: 0.6052744388580322 seconds
+Average Inference Time: 0.17098504304885864 seconds
+Model Parameters: 315924
+
+Using device: cuda
+
+ETTh1
+Train: (12094, 100, 7)
+Val: (2513, 100, 7)
+Test: (2513, 100, 7)
+Labels: (2513,)
+Normal Windows: 2149
+Anomaly Windows: 364
+Failed ETTh1: CUDA out of memory. Tried to allocate 6.16 GiB. GPU 0 has a total capacity of 8.00 GiB of which 0 bytes is free. Of the allocated memory 2.23 GiB is allocated by PyTorch, and 5.71 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+ETTh2
+Train: (12094, 100, 7)
+Val: (2513, 100, 7)
+Test: (2513, 100, 7)
+Labels: (2513,)
+Normal Windows: 1998
+Anomaly Windows: 515
+Failed ETTh2: CUDA out of memory. Tried to allocate 1.44 GiB. GPU 0 has a total capacity of 8.00 GiB of which 0 bytes is free. Of the allocated memory 8.39 GiB is allocated by PyTorch, and 1.01 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+ETTm1
+Train: (48676, 100, 7)
+Val: (10352, 100, 7)
+Test: (10352, 100, 7)
+Labels: (10352,)
+Normal Windows: 9807
+Anomaly Windows: 545
+Failed ETTm1: CUDA out of memory. Tried to allocate 24.60 GiB. GPU 0 has a total capacity of 8.00 GiB of which 5.15 GiB is free. Of the allocated memory 1.50 GiB is allocated by PyTorch, and 299.20 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+ETTm2
+Train: (48676, 100, 7)
+Val: (10352, 100, 7)
+Test: (10352, 100, 7)
+Labels: (10352,)
+Normal Windows: 9807
+Anomaly Windows: 545
+Failed ETTm2: CUDA out of memory. Tried to allocate 24.60 GiB. GPU 0 has a total capacity of 8.00 GiB of which 5.31 GiB is free. Of the allocated memory 1.50 GiB is allocated by PyTorch, and 139.18 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\wqf7023-industrial-anomaly-detection-radar\src\experiments\run_ett_sisvae.py", line 194, in <module>
+    raise RuntimeError(
+        "SISVAE produced no results — check earlier errors"
+    )
+RuntimeError: SISVAE produced no results — check earlier errors
+
+Using device: cuda
+
+ETTh1
+Train: (12094, 100, 7)
+Val: (2513, 100, 7)
+Test: (2513, 100, 7)
+Labels: (2513,)
+Normal Windows: 2149
+Anomaly Windows: 364
+Failed ETTh1: CUDA out of memory. Tried to allocate 9.23 GiB. GPU 0 has a total capacity of 8.00 GiB of which 0 bytes is free. Of the allocated memory 10.63 GiB is allocated by PyTorch, and 100.25 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+ETTh2
+Train: (12094, 100, 7)
+Val: (2513, 100, 7)
+Test: (2513, 100, 7)
+Labels: (2513,)
+Normal Windows: 1998
+Anomaly Windows: 515
+Failed ETTh2: CUDA out of memory. Tried to allocate 9.23 GiB. GPU 0 has a total capacity of 8.00 GiB of which 0 bytes is free. Of the allocated memory 10.63 GiB is allocated by PyTorch, and 102.61 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+ETTm1
+Train: (48676, 100, 7)
+Val: (10352, 100, 7)
+Test: (10352, 100, 7)
+Labels: (10352,)
+Normal Windows: 9807
+Anomaly Windows: 545
+Failed ETTm1: CUDA out of memory. Tried to allocate 37.14 GiB. GPU 0 has a total capacity of 8.00 GiB of which 0 bytes is free. Of the allocated memory 5.61 GiB is allocated by PyTorch, and 4.39 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+ETTm2
+Train: (48676, 100, 7)
+Val: (10352, 100, 7)
+Test: (10352, 100, 7)
+Labels: (10352,)
+Normal Windows: 9807
+Anomaly Windows: 545
+Failed ETTm2: CUDA out of memory. Tried to allocate 37.14 GiB. GPU 0 has a total capacity of 8.00 GiB of which 0 bytes is free. Of the allocated memory 5.61 GiB is allocated by PyTorch, and 4.25 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\wqf7023-industrial-anomaly-detection-radar\src\experiments\run_ett_smda_net.py", line 188, in <module>
+    raise RuntimeError(
+        "SMDA Net produced no results — check earlier errors"
+    )
+RuntimeError: SMDA Net produced no results — check earlier errors
