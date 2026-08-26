@@ -239,3 +239,71 @@ Traceback (most recent call last):
         "SMDA Net produced no results — check earlier errors"
     )
 RuntimeError: SMDA Net produced no results — check earlier errors
+
+LSTM-AE
+Using device: cuda
+
+ETTh1
+Train: (12094, 100, 7)
+Val: (2513, 100, 7)
+Test: (2513, 100, 7)
+Normal Windows: 2149
+Anomaly Windows: 364
+Model Device: cuda:0
+Parameters: 20,732
+Epoch 5/20 | Loss=0.247719 | Elapsed=1.2s
+Epoch 10/20 | Loss=0.230260 | Elapsed=2.2s
+Epoch 15/20 | Loss=0.225727 | Elapsed=3.0s
+Epoch 20/20 | Loss=0.223222 | Elapsed=3.9s
+Completed ETTh1
+Training Time: 3.85s
+
+ETTh2
+Train: (12094, 100, 7)
+Val: (2513, 100, 7)
+Test: (2513, 100, 7)
+Normal Windows: 1998
+Anomaly Windows: 515
+Model Device: cuda:0
+Parameters: 20,732
+Epoch 5/20 | Loss=0.272467 | Elapsed=0.8s
+Epoch 10/20 | Loss=0.247843 | Elapsed=1.7s
+Epoch 15/20 | Loss=0.243985 | Elapsed=2.5s
+Epoch 20/20 | Loss=0.239789 | Elapsed=3.3s
+Completed ETTh2
+Training Time: 3.33s
+
+ETTm1
+Train: (48676, 100, 7)
+Val: (10352, 100, 7)
+Test: (10352, 100, 7)
+Normal Windows: 9807
+Anomaly Windows: 545
+Model Device: cuda:0
+Parameters: 20,732
+Epoch 5/20 | Loss=0.216124 | Elapsed=3.4s
+Epoch 10/20 | Loss=0.211969 | Elapsed=6.9s
+Epoch 15/20 | Loss=0.209988 | Elapsed=10.4s
+Epoch 20/20 | Loss=0.208789 | Elapsed=13.8s
+Completed ETTm1
+Training Time: 13.83s
+
+ETTm2
+Train: (48676, 100, 7)
+Val: (10352, 100, 7)
+Test: (10352, 100, 7)
+Normal Windows: 9807
+Anomaly Windows: 545
+Model Device: cuda:0
+Parameters: 20,732
+Epoch 5/20 | Loss=0.236326 | Elapsed=3.5s
+Epoch 10/20 | Loss=0.232697 | Elapsed=6.9s
+Epoch 15/20 | Loss=0.230830 | Elapsed=10.3s
+Epoch 20/20 | Loss=0.231171 | Elapsed=13.7s
+Completed ETTm2
+Training Time: 13.75s
+Average F1: 0.7080406844818342
+Average AUC: 0.996365509630717
+Average Training Time: 8.69004076719284 seconds
+Average Inference Time: 0.05832022428512573 seconds
+Model Parameters: 20732
