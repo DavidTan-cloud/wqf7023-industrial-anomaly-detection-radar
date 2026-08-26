@@ -1,27 +1,47 @@
 Processing ETTh1.csv
+Point Anomalies: 50
+Point Normals: 2563
+Window Normals: 2149
+Window Anomalies: 364
 Completed ETTh1
 Train: (12094, 100, 7)
 Val: (2513, 100, 7)
 Test: (2513, 100, 7)
-Anomaly Windows: 2513
+Normal Windows: 2149
+Anomaly Windows: 364
 
 Processing ETTh2.csv
+Point Anomalies: 50
+Point Normals: 2563
+Window Normals: 1998
+Window Anomalies: 515
 Completed ETTh2
 Train: (12094, 100, 7)
 Val: (2513, 100, 7)
 Test: (2513, 100, 7)
-Anomaly Windows: 2513
+Normal Windows: 1998
+Anomaly Windows: 515
 
 Processing ETTm1.csv
+Point Anomalies: 50
+Point Normals: 10402
+Window Normals: 9807
+Window Anomalies: 545
 Completed ETTm1
 Train: (48676, 100, 7)
 Val: (10352, 100, 7)
 Test: (10352, 100, 7)
-Anomaly Windows: 10352
+Normal Windows: 9807
+Anomaly Windows: 545
 
 Processing ETTm2.csv
+Point Anomalies: 50
+Point Normals: 10402
+Window Normals: 9807
+Window Anomalies: 545
 Completed ETTm2
 Train: (48676, 100, 7)
 Val: (10352, 100, 7)
 Test: (10352, 100, 7)
-Anomaly Windows: 10352
+Normal Windows: 9807
+Anomaly Windows: 545
