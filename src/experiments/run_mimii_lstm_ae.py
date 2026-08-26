@@ -26,123 +26,152 @@ from src.models.lstm_ae import LSTMAE
 from src.evaluation.metrics import evaluate
 from src.evaluation.thresholding import percentile_threshold
 
+machines = [
+    "fan_id00",
+    "fan_id02",
+    "fan_id04",
+    "fan_id06",
+    "pump_id00",
+    "pump_id02",
+    "pump_id04",
+    "pump_id06",
+    "slider_id00",
+    "slider_id02",
+    "slider_id04",
+    "slider_id06",
+    "valve_id00",
+    "valve_id02",
+    "valve_id04",
+    "valve_id06",
+]
+
 results = []
 
-X_train = np.load(
-    "src/datasets/processed/MIMII/fan_id00_X_train.npy"
-)
+for machine in machines:
 
-X_val = np.load(
-    "src/datasets/processed/MIMII/fan_id00_X_val.npy"
-)
-
-X_test = np.load(
-    "src/datasets/processed/MIMII/fan_id00_X_test.npy"
-)
-
-y_test = np.load(
-    "src/datasets/processed/MIMII/fan_id00_y_test.npy"
-)
-
-print("Train:", X_train.shape)
-print("Val:", X_val.shape)
-print("Test:", X_test.shape)
-print("Labels:", y_test.shape)
-
-X_train_t = torch.FloatTensor(
-    X_train
-).to(device)
-
-X_test_t = torch.FloatTensor(
-    X_test
-).to(device)
-
-model = LSTMAE(
-    input_dim=X_train.shape[-1]
-).to(device)
-
-print(
-    "Model Device:",
-    next(model.parameters()).device
-)
-
-param_count = sum(
-    p.numel()
-    for p in model.parameters()
-)
-
-optimizer = torch.optim.Adam(
-    model.parameters(),
-    lr=0.001
-)
-
-criterion = torch.nn.MSELoss()
-
-train_start = time.time()
-
-EPOCHS = 50
-for epoch in range(EPOCHS):
-    optimizer.zero_grad()
-    output = model(X_train_t)
-
-    loss = criterion(output, X_train_t)
-
-    loss.backward()
-    optimizer.step()
-
-    if (epoch + 1) % 5 == 0:
-        elapsed = time.time() - train_start
-        print(
-            f"Epoch {epoch+1}/{EPOCHS} | "
-            f"Loss={loss.item():.6f} | "
-            f"Elapsed={elapsed:.1f}s"
+    try:
+        
+        X_train = np.load(
+            f"src/datasets/processed/MIMII/{machine}_X_train.npy"
         )
 
-training_time = (
-    time.time() - train_start
-)
+        X_val = np.load(
+            f"src/datasets/processed/MIMII/{machine}_X_val.npy"
+        )
 
-inference_start = time.time()
+        X_test = np.load(
+            f"src/datasets/processed/MIMII/{machine}_X_test.npy"
+        )
 
-with torch.no_grad():
-    reconstruction = model(X_test_t)
-    scores = (
-        ((X_test_t - reconstruction) ** 2)
-        .mean(dim=(1,2))
-        .detach()
-        .cpu()
-        .numpy()
-    )
+        y_test = np.load(
+            f"src/datasets/processed/MIMII/{machine}_y_test.npy"
+        )
 
-inference_time = (
-    time.time() - inference_start
-)
+        print(f"\n{machine}")
+        print("Train:", X_train.shape)
+        print("Val:", X_val.shape)
+        print("Test:", X_test.shape)
+        print("Labels:", y_test.shape)
 
-threshold = percentile_threshold(scores, percentile=95)
-preds = (scores > threshold).astype(int)
-metrics = evaluate(y_test, preds, scores)
+        X_train_t = torch.FloatTensor(
+            X_train
+        ).to(device)
 
-metrics["TrainingTime"] = training_time
-metrics["InferenceTime"] = inference_time
-metrics["Parameters"] = param_count
+        X_test_t = torch.FloatTensor(
+            X_test
+        ).to(device)
 
-metrics["Machine"] = "fan_id00"
-results.append(metrics)
+        model = LSTMAE(
+            input_dim=X_train.shape[-1]
+        ).to(device)
+
+        print(
+            "Model Device:",
+            next(model.parameters()).device
+        )
+
+        param_count = sum(
+            p.numel()
+            for p in model.parameters()
+        )
+
+        optimizer = torch.optim.Adam(
+            model.parameters(),
+            lr=0.001
+        )
+
+        criterion = torch.nn.MSELoss()
+
+        train_start = time.time()
+
+        EPOCHS = 50
+        for epoch in range(EPOCHS):
+            optimizer.zero_grad()
+            output = model(X_train_t)
+
+            loss = criterion(output, X_train_t)
+
+            loss.backward()
+            optimizer.step()
+
+            if (epoch + 1) % 5 == 0:
+                elapsed = time.time() - train_start
+                print(
+                    f"Epoch {epoch+1}/{EPOCHS} | "
+                    f"Loss={loss.item():.6f} | "
+                    f"Elapsed={elapsed:.1f}s"
+                )
+
+        training_time = (
+            time.time() - train_start
+        )
+
+        inference_start = time.time()
+
+        with torch.no_grad():
+            reconstruction = model(X_test_t)
+            scores = (
+                ((X_test_t - reconstruction) ** 2)
+                .mean(dim=(1,2))
+                .detach()
+                .cpu()
+                .numpy()
+            )
+
+        inference_time = (
+            time.time() - inference_start
+        )
+
+        threshold = percentile_threshold(scores, percentile=95)
+        preds = (scores > threshold).astype(int)
+        metrics = evaluate(y_test, preds, scores)
+
+        metrics["TrainingTime"] = training_time
+        metrics["InferenceTime"] = inference_time
+        metrics["Parameters"] = param_count
+
+        metrics["Machine"] = machine
+        results.append(metrics)
         
-pd.DataFrame(results).to_csv(
-    "results/MIMII/mimii_lstm_ae_partial.csv",
-    index=False
-)
+        pd.DataFrame(results).to_csv(
+            "results/MIMII/mimii_lstm_ae_partial.csv",
+            index=False
+        )
         
-print("Completed fan_id00")
+        print(f"Completed {machine}")
 
-del model
-del X_train_t
-del X_test_t
-del reconstruction
+        del model
+        del X_train_t
+        del X_test_t
+        del reconstruction
 
-if torch.cuda.is_available():
-    torch.cuda.empty_cache()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+
+    except Exception as e:
+        print(
+            f"Failed {machine}: {e}"
+        )
 
 results_df = pd.DataFrame(results)
 
