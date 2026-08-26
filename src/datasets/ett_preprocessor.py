@@ -197,8 +197,11 @@ for filename in files:
     )
 
     print(
+        "Normal Windows:",
+        np.sum(y_test_window == 0)
+    )
+
+    print(
         "Anomaly Windows:",
-        np.sum(
-            y_test_window == 1
-        )
+        np.sum(y_test_window == 1)
     )
