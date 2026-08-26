@@ -27,60 +27,48 @@ print("Using device:", device)
 from src.evaluation.metrics import evaluate
 from src.evaluation.thresholding import percentile_threshold
 
-machines = [
-    "fan_id00",
-    "fan_id02",
-    "fan_id04",
-    "fan_id06",
-    "pump_id00",
-    "pump_id02",
-    "pump_id04",
-    "pump_id06",
-    "slider_id00",
-    "slider_id02",
-    "slider_id04",
-    "slider_id06",
-    "valve_id00",
-    "valve_id02",
-    "valve_id04",
-    "valve_id06"
+datasets = [
+    "ETTh1",
+    "ETTh2",
+    "ETTm1",
+    "ETTm2"
 ]
 
 results = []
 
-for machine in machines:
+for dataset in datasets:
 
     try:
 
         X_train = np.load(
-            f"src/datasets/processed/MIMII/{machine}_X_train.npy"
+            f"src/datasets/processed/ETT/{dataset}_X_train.npy"
         )
 
         X_val = np.load(
-            f"src/datasets/processed/MIMII/{machine}_X_val.npy"
+            f"src/datasets/processed/ETT/{dataset}_X_val.npy"
         )
 
         X_test = np.load(
-            f"src/datasets/processed/MIMII/{machine}_X_test.npy"
+            f"src/datasets/processed/ETT/{dataset}_X_test.npy"
         )
 
         y_test = np.load(
-            f"src/datasets/processed/MIMII/{machine}_y_test.npy"
+            f"src/datasets/processed/ETT/{dataset}_y_test.npy"
         )
 
-        print(f"\n{machine}")
+        print(f"\n{dataset}")
         print("Train:", X_train.shape)
         print("Val:", X_val.shape)
         print("Test:", X_test.shape)
         print("Labels:", y_test.shape)
 
         print(
-            "Test Normals:",
+            "Normal Windows:",
             np.sum(y_test == 0)
         )
 
         print(
-            "Test Anomalies:",
+            "Anomaly Windows:",
             np.sum(y_test == 1)
         )
 
@@ -110,7 +98,7 @@ for machine in machines:
         )
 
         
-        EPOCHS = 50
+        EPOCHS = 20
 
         train_start = time.time()
 
@@ -166,15 +154,15 @@ for machine in machines:
         metrics["InferenceTime"] = inference_time
         metrics["Parameters"] = param_count
 
-        metrics["Machine"] = machine
+        metrics["Dataset"] = dataset
         results.append(metrics)
         
         pd.DataFrame(results).to_csv(
-            "results/MIMII/mimii_smda_net_partial.csv",
+            "results/ETT/ett_smda_net_partial.csv",
             index=False
         )
         
-        print(f"Completed {machine}")
+        print(f"Completed {dataset}")
 
         del model
         del X_train_t
@@ -188,7 +176,7 @@ for machine in machines:
     except Exception as e:
 
         print(
-            f"Failed {machine}: {e}"
+            f"Failed {dataset}: {e}"
         )
 
         if torch.cuda.is_available():
@@ -202,7 +190,7 @@ if results_df.empty:
     )
 
 expected_cols = [
-    "Machine", 
+    "Dataset", 
     "Accuracy", 
     "Precision",
     "Recall", 
@@ -216,7 +204,7 @@ expected_cols = [
 results_df = results_df[expected_cols]
 
 results_df.to_csv(
-    "results/MIMII/mimii_smda_net_results.csv",
+    "results/ETT/ett_smda_net_results.csv",
     index=False
 )
 
