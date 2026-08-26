@@ -1,0 +1,319 @@
+Processing fan_id00
+Normal files: 1011
+Anomaly files: 407
+Completed fan_id00
+fan_id00
+Train Normal: 707
+Validation Normal: 152
+Test Normal: 152
+Anomaly: 407
+(707, 313, 20)
+(559, 313, 20)
+(707,)
+(559,)
+(152, 313, 20)
+(152,)
+Test Normals: 152
+Test Anomalies: 407
+Normal files: 1011
+Anomaly files: 407
+
+Processing fan_id02
+Normal files: 1016
+Anomaly files: 359
+Completed fan_id02
+fan_id02
+Train Normal: 711
+Validation Normal: 152
+Test Normal: 153
+Anomaly: 359
+(711, 313, 20)
+(512, 313, 20)
+(711,)
+(512,)
+(152, 313, 20)
+(152,)
+Test Normals: 153
+Test Anomalies: 359
+Normal files: 1016
+Anomaly files: 359
+
+Processing fan_id04
+Normal files: 1033
+Anomaly files: 348
+Completed fan_id04
+fan_id04
+Train Normal: 723
+Validation Normal: 155
+Test Normal: 155
+Anomaly: 348
+(723, 313, 20)
+(503, 313, 20)
+(723,)
+(503,)
+(155, 313, 20)
+(155,)
+Test Normals: 155
+Test Anomalies: 348
+Normal files: 1033
+Anomaly files: 348
+
+Processing fan_id06
+Normal files: 1015
+Anomaly files: 361
+Completed fan_id06
+fan_id06
+Train Normal: 710
+Validation Normal: 152
+Test Normal: 153
+Anomaly: 361
+(710, 313, 20)
+(514, 313, 20)
+(710,)
+(514,)
+(152, 313, 20)
+(152,)
+Test Normals: 153
+Test Anomalies: 361
+Normal files: 1015
+Anomaly files: 361
+
+Processing pump_id00
+Normal files: 1006
+Anomaly files: 143
+Completed pump_id00
+pump_id00
+Train Normal: 704
+Validation Normal: 151
+Test Normal: 151
+Anomaly: 143
+(704, 313, 20)
+(294, 313, 20)
+(704,)
+(294,)
+(151, 313, 20)
+(151,)
+Test Normals: 151
+Test Anomalies: 143
+Normal files: 1006
+Anomaly files: 143
+
+Processing pump_id02
+Normal files: 1005
+Anomaly files: 111
+Completed pump_id02
+pump_id02
+Train Normal: 703
+Validation Normal: 151
+Test Normal: 151
+Anomaly: 111
+(703, 313, 20)
+(262, 313, 20)
+(703,)
+(262,)
+(151, 313, 20)
+(151,)
+Test Normals: 151
+Test Anomalies: 111
+Normal files: 1005
+Anomaly files: 111
+
+Processing pump_id04
+Normal files: 702
+Anomaly files: 100
+Completed pump_id04
+pump_id04
+Train Normal: 491
+Validation Normal: 105
+Test Normal: 106
+Anomaly: 100
+(491, 313, 20)
+(206, 313, 20)
+(491,)
+(206,)
+(105, 313, 20)
+(105,)
+Test Normals: 106
+Test Anomalies: 100
+Normal files: 702
+Anomaly files: 100
+
+Processing pump_id06
+Normal files: 1036
+Anomaly files: 102
+Completed pump_id06
+pump_id06
+Train Normal: 725
+Validation Normal: 155
+Test Normal: 156
+Anomaly: 102
+(725, 313, 20)
+(258, 313, 20)
+(725,)
+(258,)
+(155, 313, 20)
+(155,)
+Test Normals: 156
+Test Anomalies: 102
+Normal files: 1036
+Anomaly files: 102
+
+Processing slider_id00
+Normal files: 1068
+Anomaly files: 356
+Completed slider_id00
+slider_id00
+Train Normal: 747
+Validation Normal: 160
+Test Normal: 161
+Anomaly: 356
+(747, 313, 20)
+(517, 313, 20)
+(747,)
+(517,)
+(160, 313, 20)
+(160,)
+Test Normals: 161
+Test Anomalies: 356
+Normal files: 1068
+Anomaly files: 356
+
+Processing slider_id02
+Normal files: 1068
+Anomaly files: 267
+Completed slider_id02
+slider_id02
+Train Normal: 747
+Validation Normal: 160
+Test Normal: 161
+Anomaly: 267
+(747, 313, 20)
+(428, 313, 20)
+(747,)
+(428,)
+(160, 313, 20)
+(160,)
+Test Normals: 161
+Test Anomalies: 267
+Normal files: 1068
+Anomaly files: 267
+
+Processing slider_id04
+Normal files: 534
+Anomaly files: 178
+Completed slider_id04
+slider_id04
+Train Normal: 373
+Validation Normal: 80
+Test Normal: 81
+Anomaly: 178
+(373, 313, 20)
+(259, 313, 20)
+(373,)
+(259,)
+(80, 313, 20)
+(80,)
+Test Normals: 81
+Test Anomalies: 178
+Normal files: 534
+Anomaly files: 178
+
+Processing slider_id06
+Normal files: 534
+Anomaly files: 89
+Completed slider_id06
+slider_id06
+Train Normal: 373
+Validation Normal: 80
+Test Normal: 81
+Anomaly: 89
+(373, 313, 20)
+(170, 313, 20)
+(373,)
+(170,)
+(80, 313, 20)
+(80,)
+Test Normals: 81
+Test Anomalies: 89
+Normal files: 534
+Anomaly files: 89
+
+Processing valve_id00
+Normal files: 991
+Anomaly files: 119
+Completed valve_id00
+valve_id00
+Train Normal: 693
+Validation Normal: 149
+Test Normal: 149
+Anomaly: 119
+(693, 313, 20)
+(268, 313, 20)
+(693,)
+(268,)
+(149, 313, 20)
+(149,)
+Test Normals: 149
+Test Anomalies: 119
+Normal files: 991
+Anomaly files: 119
+
+Processing valve_id02
+Normal files: 708
+Anomaly files: 120
+Completed valve_id02
+valve_id02
+Train Normal: 495
+Validation Normal: 106
+Test Normal: 107
+Anomaly: 120
+(495, 313, 20)
+(227, 313, 20)
+(495,)
+(227,)
+(106, 313, 20)
+(106,)
+Test Normals: 107
+Test Anomalies: 120
+Normal files: 708
+Anomaly files: 120
+
+Processing valve_id04
+Normal files: 1000
+Anomaly files: 120
+Completed valve_id04
+valve_id04
+Train Normal: 700
+Validation Normal: 150
+Test Normal: 150
+Anomaly: 120
+(700, 313, 20)
+(270, 313, 20)
+(700,)
+(270,)
+(150, 313, 20)
+(150,)
+Test Normals: 150
+Test Anomalies: 120
+Normal files: 1000
+Anomaly files: 120
+
+Processing valve_id06
+Normal files: 992
+Anomaly files: 120
+Completed valve_id06
+valve_id06
+Train Normal: 694
+Validation Normal: 149
+Test Normal: 149
+Anomaly: 120
+(694, 313, 20)
+(269, 313, 20)
+(694,)
+(269,)
+(149, 313, 20)
+(149,)
+Test Normals: 149
+Test Anomalies: 120
+Normal files: 992
+Anomaly files: 120
