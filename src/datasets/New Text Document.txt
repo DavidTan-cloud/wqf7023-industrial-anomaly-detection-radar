@@ -122,3 +122,24 @@ LADOP Average AUC: 0.6884594704747902
 Average Training Time: 0.0012046098709106445 seconds
 Average Inference Time: 0.006146088242530823 seconds
 Model Parameters: 0
+
+RANCoder MIMII full
+Average F1: 0.1351380050717336
+Average AUC: 0.7095803761161918
+Average Training Time: 0.31400761008262634 seconds
+Average Inference Time: 0.021229416131973267 seconds
+Model Parameters: 2823484
+
+SISVAE MIMII full
+Average F1: 0.13740098162784173
+Average AUC: 0.6434921061966203
+Average Training Time: 1.0589759200811386 seconds
+Average Inference Time: 0.004809260368347168 seconds
+Model Parameters: 46388
+
+SMDA-Net MIMII full
+Average F1: 0.13899598292075743
+Average AUC: 0.7361134664063558
+Average Training Time: 19.78446415066719 seconds
+Average Inference Time: 0.04845617711544037 seconds
+Model Parameters: 138836
