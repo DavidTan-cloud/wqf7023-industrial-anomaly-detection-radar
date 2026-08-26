@@ -188,6 +188,9 @@ for machine in machines:
         del mu
         del logvar
 
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            
     except Exception as e:
 
         print(
