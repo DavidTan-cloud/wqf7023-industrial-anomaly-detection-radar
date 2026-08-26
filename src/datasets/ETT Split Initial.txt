@@ -1,0 +1,27 @@
+Processing ETTh1.csv
+Completed ETTh1
+Train: (12094, 100, 7)
+Val: (2513, 100, 7)
+Test: (2513, 100, 7)
+Anomaly Windows: 2513
+
+Processing ETTh2.csv
+Completed ETTh2
+Train: (12094, 100, 7)
+Val: (2513, 100, 7)
+Test: (2513, 100, 7)
+Anomaly Windows: 2513
+
+Processing ETTm1.csv
+Completed ETTm1
+Train: (48676, 100, 7)
+Val: (10352, 100, 7)
+Test: (10352, 100, 7)
+Anomaly Windows: 10352
+
+Processing ETTm2.csv
+Completed ETTm2
+Train: (48676, 100, 7)
+Val: (10352, 100, 7)
+Test: (10352, 100, 7)
+Anomaly Windows: 10352
