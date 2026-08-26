@@ -100,32 +100,31 @@ for filename in files:
         dtype=np.int8
     )
 
-    anomaly_ratio = 0.10
-
-    n_anomalies = int(
-        len(test)
-        * anomaly_ratio
-    )
-
-    anomaly_idx = np.random.choice(
-        len(test),
-        n_anomalies,
-        replace=False
-    )
-
-    y_test[anomaly_idx] = 1
-
     test_anomaly = test.copy()
 
-    test_anomaly[
-        anomaly_idx
-    ] += np.random.normal(
-        loc=5.0,
-        scale=1.0,
-        size=test_anomaly[
-            anomaly_idx
-        ].shape
-    )
+    num_blocks = 5
+    block_size = 10
+
+    for _ in range(num_blocks):
+
+        start = np.random.randint(
+            0,
+            len(test) - block_size
+        )
+
+        y_test[
+            start:start+block_size
+        ] = 1
+
+        test_anomaly[
+            start:start+block_size
+        ] += np.random.normal(
+            loc=5.0,
+            scale=1.0,
+            size=test_anomaly[
+                start:start+block_size
+            ].shape
+        )
 
     X_train = create_windows(
         train,
@@ -150,6 +149,26 @@ for filename in files:
     base_name = filename.replace(
         ".csv",
         ""
+    )
+
+    print(
+        "Point Anomalies:",
+        np.sum(y_test == 1)
+    )
+
+    print(
+        "Point Normals:",
+        np.sum(y_test == 0)
+    )
+
+    print(
+        "Window Normals:",
+        np.sum(y_test_window == 0)
+    )
+
+    print(
+        "Window Anomalies:",
+        np.sum(y_test_window == 1)
     )
 
     np.save(
