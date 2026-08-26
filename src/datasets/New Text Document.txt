@@ -109,6 +109,7 @@ Average Training Time: 28.24288034439087 seconds
 Average Inference Time: 0.3781282901763916 seconds
 Model Parameters: 138836
 
+LSTM AE MIMII full
 Average F1: 0.13580779785780003
 Average AUC: 0.7195105032426631
 Average Training Time: 0.7381532937288284 seconds
