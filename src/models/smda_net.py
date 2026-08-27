@@ -6,7 +6,7 @@ class SMDANet(nn.Module):
         self,
         input_dim,
         d_model=64,
-        nhead=4,
+        nhead=2,
         num_layers=1
     ):
 

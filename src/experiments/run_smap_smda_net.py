@@ -54,7 +54,7 @@ channels = loader.get_channels()
 
 results = []
 
-WINDOW_SIZE = 100
+WINDOW_SIZE = 200
 
 for channel in channels:
 
@@ -182,7 +182,7 @@ for channel in channels:
                 print(
                     f"{channel_id}"
                     f" | Epoch {epoch+1}"
-                    f" | Loss={epoch_loss/len(train_loader):.6f}"
+                    f" | Loss={epoch_loss/len(train_loader):.6f} | "
                     f"Elapsed={elapsed:.1f}s"
                 )
 
