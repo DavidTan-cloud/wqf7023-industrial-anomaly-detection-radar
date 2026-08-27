@@ -133,7 +133,7 @@ for channel in channels:
 
         train_start = time.time()
 
-        for epoch in range(10):
+        for epoch in range(50):
             optimizer.zero_grad()
             output = model(X_train_t)
 
