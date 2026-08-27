@@ -7,7 +7,7 @@ class SMDANet(nn.Module):
         input_dim,
         d_model=64,
         nhead=4,
-        num_layers=2
+        num_layers=1
     ):
 
         super().__init__()

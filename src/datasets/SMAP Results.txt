@@ -58,6 +58,30 @@ Average AUC: 0.6389598737632577
 Average Training Time: 3.9341496302757735 seconds
 Average Inference Time: 0.3546213044060601 seconds
 Model Parameters: 565593
+Window 100
+Threshold 60
+Epoch 10
+Batch_size 64
+d_model 64
+nhead 2
+num_layers 1
+Average F1: 0.2795866240838762
+Average AUC: 0.6440745358887563
+Average Training Time: 2.0842566166395025 seconds
+Average Inference Time: 0.2037371794382731 seconds
+Model Parameters: 284441
+Window 100
+Threshold 60
+Epoch 10
+Batch_size 64
+d_model 64
+nhead 4
+num_layers 1
+Average F1: 0.2685795784460794
+Average AUC: 0.630086604293494
+Average Training Time: 2.20501141194944 seconds
+Average Inference Time: 0.21229965598494918 seconds
+Model Parameters: 284441
 
 50
 Average F1: 0.1307754442830157
