@@ -82,7 +82,15 @@ Average AUC: 0.6726954623006037
 Average Training Time: 11.197979191203176 seconds
 Average Inference Time: 0.3633599016401503 seconds
 Model Parameters: 284441
-
+Window 200
+Threshold 60
+Epoch 50
+Batch_size 64
+Average F1: 0.34346221026638063
+Average AUC: 0.6820187216899863
+Average Training Time: 18.615969681445463 seconds
+Average Inference Time: 0.3623345692952474 seconds
+Model Parameters: 284441
 
 50
 Average F1: 0.1307754442830157
