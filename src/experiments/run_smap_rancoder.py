@@ -140,7 +140,7 @@ for channel in channels:
 
         model.fit(
             X_train_t,
-            epochs=20
+            epochs=50
         )
 
         training_time = (

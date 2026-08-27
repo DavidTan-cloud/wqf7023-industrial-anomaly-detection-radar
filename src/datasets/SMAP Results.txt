@@ -24,14 +24,38 @@ LADOP Average AUC: 0.622447861544972
 Average Training Time: 0.003997364161927023 seconds
 Average Inference Time: 0.0894556251572974 seconds
 Model Parameters: 0
+Window 200
+Threshold 60
+LADOP Average F1: 0.3305286095945964
+LADOP Average AUC: 0.6483539518587753
+Average Training Time: 0.009202515637433087 seconds
+Average Inference Time: 0.17854181042423956 seconds
+Model Parameters: 0
 RANCoder
 Window 100
 Threshold 60
+Epoch 20
 Average F1: 0.27693410774042526
 Average AUC: 0.6221758853548179
 Average Training Time: 0.11903154702834141 seconds
 Average Inference Time: 0.029357533396026234 seconds
 Model Parameters: 1127724
+Window 200
+Threshold 60
+Epoch 20
+Average F1: 0.32890990432056927
+Average AUC: 0.6465962099679803
+Average Training Time: 0.11469418619885857 seconds
+Average Inference Time: 0.11731528647151994 seconds
+Model Parameters: 2255224
+Window 200
+Threshold 60
+Epoch 50
+Average F1: 0.3278067247069123
+Average AUC: 0.648263609188833
+Average Training Time: 0.37752506762375065 seconds
+Average Inference Time: 0.15542237258251804 seconds
+Model Parameters: 2255224
 SISVAE
 Window 100
 Threshold 60
@@ -40,6 +64,14 @@ Average F1: 0.2660012996607275
 Average AUC: 0.6234770893759353
 Average Training Time: 1.2462445070714125 seconds
 Average Inference Time: 0.047543584564585746 seconds
+Model Parameters: 47993
+Window 200
+Threshold 60
+Epoch 50
+Average F1: 0.315461451870426
+Average AUC: 0.6465877650328924
+Average Training Time: 9.050730505107362 seconds
+Average Inference Time: 0.17489745293134523 seconds
 Model Parameters: 47993
 SMDA-Net
 Window 100
