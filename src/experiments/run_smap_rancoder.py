@@ -175,7 +175,7 @@ for channel in channels:
         results.append(metrics)
         
         pd.DataFrame(results).to_csv(
-            "results/smap_rancoder_partial.csv",
+            "results/SMAP/smap_rancoder_partial.csv",
             index=False
         )
         
@@ -207,7 +207,7 @@ expected_cols = [
 results_df = results_df[expected_cols]
 
 results_df.to_csv(
-    "results/smap_rancoder_results.csv",
+    "results/SMAP/smap_rancoder_results.csv",
     index=False
 )
 

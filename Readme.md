@@ -5,9 +5,9 @@
 This repository contains the implementation of an AI-based anomaly detection framework for industrial time-series data based on the S-RADAR framework.
 
 ### Datasets
-- MIMII (In progress)
+- MIMII
 - SMAP
-- ETT (In consideration)
+- ETT
 
 ### Models
 - LSTM-AE

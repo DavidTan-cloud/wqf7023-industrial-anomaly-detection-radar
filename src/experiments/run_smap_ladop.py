@@ -121,7 +121,7 @@ for channel in channels:
         results.append(metrics)
         
         pd.DataFrame(results).to_csv(
-            "results/smap_ladop_partial.csv",
+            "results/SMAP/smap_ladop_partial.csv",
             index=False
         )
         
@@ -146,7 +146,7 @@ if missing:
 results_df = results_df[expected_cols]
 
 results_df.to_csv(
-    "results/smap_ladop_results.csv",
+    "results/SMAP/smap_ladop_results.csv",
     index=False
 )
 

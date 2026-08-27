@@ -174,7 +174,7 @@ for channel in channels:
         results.append(metrics)
         
         pd.DataFrame(results).to_csv(
-            "results/smap_lstm_ae_partial.csv",
+            "results/SMAP/smap_lstm_ae_partial.csv",
             index=False
         )
         
@@ -201,7 +201,7 @@ results_df = results_df[
 ]
 
 results_df.to_csv(
-    "results/smap_lstm_ae_results.csv",
+    "results/SMAP/smap_lstm_ae_results.csv",
     index=False
 )
 
