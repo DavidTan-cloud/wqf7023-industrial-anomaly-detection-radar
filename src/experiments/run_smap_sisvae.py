@@ -139,7 +139,7 @@ for channel in channels:
             lr=0.001
         )
 
-        EPOCHS = 20
+        EPOCHS = 30
 
         train_start = time.time()
 
@@ -186,7 +186,7 @@ for channel in channels:
             time.time() - inference_start
         )
         
-        threshold = percentile_threshold(scores, percentile=95)
+        threshold = percentile_threshold(scores, percentile=60)
         preds = (scores > threshold).astype(int)
         metrics = evaluate(y_test, preds, scores)
 

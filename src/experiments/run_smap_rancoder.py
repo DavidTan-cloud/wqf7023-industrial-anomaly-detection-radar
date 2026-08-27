@@ -163,7 +163,7 @@ for channel in channels:
                 f"{len(scores)} vs {len(y_test)}"
             )
 
-        threshold = percentile_threshold(scores, percentile=95)
+        threshold = percentile_threshold(scores, percentile=60)
         preds = (scores > threshold).astype(int)
         metrics = evaluate(y_test, preds, scores)
 

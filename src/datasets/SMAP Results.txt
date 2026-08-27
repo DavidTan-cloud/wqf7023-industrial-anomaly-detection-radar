@@ -1,3 +1,44 @@
+Fine Tuned
+LSTM-AE
+Average F1: 0.27716705047726437
+Average AUC: 0.6217736089523292
+Average Training Time: 0.04965469277935264 seconds
+Average Inference Time: 0.14229091891536005 seconds
+Model Parameters: 32396
+LADOP
+LADOP Average F1: 0.2778959702574321
+LADOP Average AUC: 0.622447861544972
+Average Training Time: 0.003997364161927023 seconds
+Average Inference Time: 0.0894556251572974 seconds
+Model Parameters: 0
+RANCoder
+Average F1: 0.27693410774042526
+Average AUC: 0.6221758853548179
+Average Training Time: 0.11903154702834141 seconds
+Average Inference Time: 0.029357533396026234 seconds
+Model Parameters: 1127724
+SISVAE
+Window 100
+Threshold 60
+Epoch 10
+Average F1: 0.2622094254972524
+Average AUC: 0.6171972644398807
+Average Training Time: 0.24051207966274685 seconds
+Average Inference Time: 0.05819381019215525 seconds
+Model Parameters: 47993
+Epoch 20
+Average F1: 0.26504745019810555
+Average AUC: 0.6201339339075399
+Average Training Time: 0.48380140905027036 seconds
+Average Inference Time: 0.0385716461840971 seconds
+Model Parameters: 47993
+Epoch 30
+Average F1: 0.2657941665238107
+Average AUC: 0.6228401357953971
+Average Training Time: 0.7459618750913644 seconds
+Average Inference Time: 0.03768609188221119 seconds
+Model Parameters: 47993
+
 50
 Average F1: 0.1307754442830157
 Average AUC: 0.6131512635654269
