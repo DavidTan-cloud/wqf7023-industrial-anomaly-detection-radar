@@ -1,0 +1,15 @@
+50
+Average F1: 0.1307754442830157
+Average AUC: 0.6131512635654269
+Average Training Time: 0.04169655729223181 seconds
+Average Inference Time: 0.0630503672140616 seconds
+Model Parameters: 32396
+
+100
+Average F1: 0.14273684000511622
+Average AUC: 0.6217878354966876
+Average Training Time: 0.05071186430660295 seconds
+Average Inference Time: 0.153883672054903 seconds
+Model Parameters: 32396
+
+200

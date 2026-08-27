@@ -48,7 +48,7 @@ channels = loader.get_channels()
 
 results = []
 
-WINDOW_SIZE = 100
+WINDOW_SIZE = 200
 
 for channel in channels:
 
