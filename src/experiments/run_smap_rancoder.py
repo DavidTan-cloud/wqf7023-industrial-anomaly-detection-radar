@@ -48,7 +48,7 @@ channels = loader.get_channels()
 
 results = []
 
-WINDOW_SIZE = 100
+WINDOW_SIZE = 200
 
 for channel in channels:
 
@@ -116,7 +116,7 @@ for channel in channels:
             X_test.shape[0],
             -1
         )
-
+        
         X_train_t = torch.FloatTensor(
             X_train_flat
         ).to(device)
@@ -124,7 +124,7 @@ for channel in channels:
         X_test_t = torch.FloatTensor(
             X_test_flat
         ).to(device)
-
+        
         model = RANCoder(
             input_dim=X_train_flat.shape[1],
             device=device
