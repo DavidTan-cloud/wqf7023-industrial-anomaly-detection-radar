@@ -15,6 +15,13 @@ import pandas as pd
 import numpy as np
 import torch
 
+from torch.utils.data import (
+    TensorDataset,
+    DataLoader
+)
+
+import gc
+
 device = torch.device(
     "cuda" if torch.cuda.is_available() else "cpu"
 )
@@ -48,7 +55,7 @@ channels = loader.get_channels()
 
 results = []
 
-WINDOW_SIZE = 100
+WINDOW_SIZE = 200
 
 for channel in channels:
 
@@ -107,13 +114,25 @@ for channel in channels:
             WINDOW_SIZE
         )
 
-        X_train_t = torch.FloatTensor(
-            X_train
-        ).to(device)
+        train_dataset = TensorDataset(
+            torch.FloatTensor(X_train)
+        )
 
-        X_test_t = torch.FloatTensor(
-            X_test
-        ).to(device)
+        train_loader = DataLoader(
+            train_dataset,
+            batch_size=64,
+            shuffle=True
+        )
+
+        test_dataset = TensorDataset(
+            torch.FloatTensor(X_test)
+        )
+
+        test_loader = DataLoader(
+                test_dataset,
+            batch_size=64,
+            shuffle=False
+        )
 
         model = LSTMAE(
             input_dim=X_train.shape[-1]
@@ -131,16 +150,31 @@ for channel in channels:
 
         criterion = torch.nn.MSELoss()
 
+        EPOCHS = 50
+
         train_start = time.time()
 
-        for epoch in range(10):
-            optimizer.zero_grad()
-            output = model(X_train_t)
+        for epoch in range(EPOCHS):
+            epoch_loss = 0
+            for (batch,) in train_loader:
+                batch = batch.to(device)
+                optimizer.zero_grad()
+                output = model(batch)
 
-            loss = criterion(output, X_train_t)
+                loss = criterion(output, batch)
 
-            loss.backward()
-            optimizer.step()
+                loss.backward()
+                optimizer.step()
+
+                epoch_loss += loss.item()
+
+            if (epoch + 1) % 10 == 0:
+                print(
+                    f"{channel_id}"
+                    f" | Epoch {epoch + 1}"
+                    f" | Loss={epoch_loss/len(train_loader):.6f}"
+                )
+        
 
         training_time = (
             time.time() - train_start
@@ -148,15 +182,30 @@ for channel in channels:
 
         inference_start = time.time()
 
+        model.eval()
+
+        all_scores = []
+
         with torch.no_grad():
-            reconstruction = model(X_test_t)
-            scores = (
-                ((X_test_t - reconstruction) ** 2)
-                .mean(dim=(1,2))
-                .detach()
-                .cpu()
-                .numpy()
-            )
+            for (batch,) in test_loader:
+                batch = batch.to(device)
+                reconstruction = model(batch)
+
+                batch_scores = (
+                    ((batch - reconstruction) ** 2)
+                    .mean(dim=(1,2))
+                    .detach()
+                    .cpu()
+                    .numpy()
+                )
+
+                all_scores.append(
+                    batch_scores
+                )
+            
+        scores = np.concatenate(
+            all_scores
+        )
 
         inference_time = (
             time.time() - inference_start
@@ -186,6 +235,11 @@ for channel in channels:
 
 results_df = pd.DataFrame(results)
 
+if results_df.empty:
+
+    raise RuntimeError(
+        "LSTM-AE produced no results."
+    )
 results_df = results_df[
     [
         "Channel",
