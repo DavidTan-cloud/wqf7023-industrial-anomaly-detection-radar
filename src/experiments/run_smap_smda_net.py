@@ -108,13 +108,25 @@ for channel in channels:
             WINDOW_SIZE
         )
 
-        X_train_t = torch.FloatTensor(
-            X_train
-        ).to(device)
+        train_dataset = TensorDataset(
+            torch.FloatTensor(X_train)
+        )
 
-        X_test_t = torch.FloatTensor(
-            X_test
-        ).to(device)
+        train_loader = DataLoader(
+            train_dataset,
+            batch_size=64,
+            shuffle=True
+        )
+
+        test_dataset = TensorDataset(
+            torch.FloatTensor(X_test)
+        )
+
+        test_loader = DataLoader(
+            test_dataset,
+            batch_size=64,
+            shuffle=False
+        )
 
         model = SMDANet(
             input_dim=X_train.shape[-1]
