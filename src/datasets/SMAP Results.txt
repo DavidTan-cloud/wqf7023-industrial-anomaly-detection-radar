@@ -37,3 +37,28 @@ Average AUC: 0.620782631838644
 Average Training Time: 0.044980278721562135 seconds
 Average Inference Time: 0.14689593550599653 seconds
 Model Parameters: 32396
+
+85
+Average F1: 0.22050177724425538
+Average AUC: 0.6211220330673121
+Average Training Time: 0.042766927201070906 seconds
+Average Inference Time: 0.14668701901847933 seconds
+Model Parameters: 32396
+80
+Average F1: 0.24475464980340575
+Average AUC: 0.6209801682879484
+Average Training Time: 0.04257921819333677 seconds
+Average Inference Time: 0.14842189977198472 seconds
+Model Parameters: 32396
+75
+Average F1: 0.2593541035607649
+Average AUC: 0.6211959150914396
+Average Training Time: 0.04331398304597831 seconds
+Average Inference Time: 0.14753897984822592 seconds
+Model Parameters: 32396
+70
+Average F1: 0.26531875431892377
+Average AUC: 0.6197509947630125
+Average Training Time: 0.04240017172730999 seconds
+Average Inference Time: 0.14890525664812254 seconds
+Model Parameters: 32396
