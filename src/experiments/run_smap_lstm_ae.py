@@ -48,7 +48,7 @@ channels = loader.get_channels()
 
 results = []
 
-WINDOW_SIZE = 200
+WINDOW_SIZE = 100
 
 for channel in channels:
 
@@ -162,7 +162,7 @@ for channel in channels:
             time.time() - inference_start
         )
 
-        threshold = percentile_threshold(scores, percentile=95)
+        threshold = percentile_threshold(scores, percentile=90)
         preds = (scores > threshold).astype(int)
         metrics = evaluate(y_test, preds, scores)
 

@@ -12,4 +12,28 @@ Average Training Time: 0.05071186430660295 seconds
 Average Inference Time: 0.153883672054903 seconds
 Model Parameters: 32396
 
-200
+100
+99
+Average F1: 0.08288169397360215
+Average AUC: 0.6214793144242032
+Average Training Time: 0.04879756032684703 seconds
+Average Inference Time: 0.14569018210893797 seconds
+Model Parameters: 32396
+97
+Average F1: 0.12539853265323916
+Average AUC: 0.6193203442287151
+Average Training Time: 0.04520624655264395 seconds
+Average Inference Time: 0.1467762228883343 seconds
+Model Parameters: 32396
+95
+Average F1: 0.1441847508354018
+Average AUC: 0.620657148039047
+Average Training Time: 0.04500525380358284 seconds
+Average Inference Time: 0.14641405623636128 seconds
+Model Parameters: 32396
+90
+Average F1: 0.1949162907117656
+Average AUC: 0.620782631838644
+Average Training Time: 0.044980278721562135 seconds
+Average Inference Time: 0.14689593550599653 seconds
+Model Parameters: 32396
