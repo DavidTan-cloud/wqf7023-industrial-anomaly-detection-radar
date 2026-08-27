@@ -16,6 +16,11 @@ import numpy as np
 import torch
 import torch.nn as nn
 
+from torch.utils.data import (
+    TensorDataset,
+    DataLoader
+)
+
 device = torch.device(
     "cuda" if torch.cuda.is_available() else "cpu"
 )
@@ -148,26 +153,37 @@ for channel in channels:
         EPOCHS = 10
 
         train_start = time.time()
+        
+        model.train()
 
         for epoch in range(EPOCHS):
-            optimizer.zero_grad()
-            reconstruction = model(
-                X_train_t
-            )
+            
+            epoch_loss = 0
+            
+            for (batch,) in train_loader:
+                batch = batch.to(device)
+                optimizer.zero_grad()
+                reconstruction = model(
+                    batch
+                )
 
-            loss = criterion(
-                reconstruction,
-                X_train_t
-            )
+                loss = criterion(
+                    reconstruction,
+                    batch
+                )
 
-            loss.backward()
-            optimizer.step()
+                loss.backward()
+                optimizer.step()
+                
+                epoch_loss += loss.item()
 
             if (epoch + 1) % 5 == 0:
+                elapsed = (time.time() - train_start)
                 print(
                     f"{channel_id}"
                     f" | Epoch {epoch+1}"
-                    f" | Loss={loss.item():.6f}"
+                    f" | Loss={epoch_loss/len(train_loader):.6f}"
+                    f"Elapsed={elapsed:.1f}s"
                 )
 
         training_time = (
@@ -175,13 +191,36 @@ for channel in channels:
         )
 
         inference_start = time.time()
+        
+        model.eval()
+
+        all_scores = []
 
         with torch.no_grad():
-            reconstruction = model(
-                X_test_t
-            )
-            scores = ((X_test_t - reconstruction) ** 2).mean(dim=(1,2)).cpu().numpy()
+            
+            for (batch,) in test_loader:
 
+                batch = batch.to(device)
+
+                reconstruction = model(
+                    batch
+                )
+
+                batch_scores = (
+                    ((batch - reconstruction) ** 2)
+                    .mean(dim=(1, 2))
+                    .cpu()
+                    .numpy()
+                )
+
+                all_scores.append(
+                    batch_scores
+                )
+
+        scores = np.concatenate(
+            all_scores
+        )
+        
         inference_time = (
             time.time() - inference_start
         )
@@ -206,8 +245,7 @@ for channel in channels:
 
         # Free GPU memory
         del model
-        del X_train_t
-        del X_test_t
+        del scores
         torch.cuda.empty_cache()
 
     except Exception as e:

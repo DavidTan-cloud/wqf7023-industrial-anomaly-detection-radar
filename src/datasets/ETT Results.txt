@@ -381,6 +381,9 @@ Average Inference Time: 0.06431043148040771 seconds
 Model Parameters: 42215
 
 SMDA-Net
+d_model=32,
+nhead=2,
+num_layers=1
 Using device: cuda
 
 ETTh1
@@ -451,3 +454,77 @@ Average AUC: 1.0
 Average Training Time: 34.89302843809128 seconds
 Average Inference Time: 0.14944308996200562 seconds
 Model Parameters: 137991
+
+d_model=64,
+nhead=4,
+num_layers=2
+Using device: cuda
+
+ETTh1
+Train: (12094, 100, 7)
+Val: (2513, 100, 7)
+Test: (2513, 100, 7)
+Labels: (2513,)
+Normal Windows: 2149
+Anomaly Windows: 364
+Model Device: cuda:0
+Parameters: 563,271
+Epoch 5/20 | Loss=0.006669 | Elapsed=8.7s
+Epoch 10/20 | Loss=0.002760 | Elapsed=17.3s
+Epoch 15/20 | Loss=0.001527 | Elapsed=26.2s
+Epoch 20/20 | Loss=0.001029 | Elapsed=35.3s
+Completed ETTh1
+Training Time: 35.31s
+
+ETTh2
+Train: (12094, 100, 7)
+Val: (2513, 100, 7)
+Test: (2513, 100, 7)
+Labels: (2513,)
+Normal Windows: 1998
+Anomaly Windows: 515
+Model Device: cuda:0
+Parameters: 563,271
+Epoch 5/20 | Loss=0.007958 | Elapsed=8.9s
+Epoch 10/20 | Loss=0.003159 | Elapsed=17.9s
+Epoch 15/20 | Loss=0.001778 | Elapsed=26.8s
+Epoch 20/20 | Loss=0.001250 | Elapsed=35.8s
+Completed ETTh2
+Training Time: 35.82s
+
+ETTm1
+Train: (48676, 100, 7)
+Val: (10352, 100, 7)
+Test: (10352, 100, 7)
+Labels: (10352,)
+Normal Windows: 9807
+Anomaly Windows: 545
+Model Device: cuda:0
+Parameters: 563,271
+Epoch 5/20 | Loss=0.001299 | Elapsed=36.7s
+Epoch 10/20 | Loss=0.000504 | Elapsed=73.2s
+Epoch 15/20 | Loss=0.000275 | Elapsed=109.1s
+Epoch 20/20 | Loss=0.000202 | Elapsed=144.9s
+Completed ETTm1
+Training Time: 144.86s
+
+ETTm2
+Train: (48676, 100, 7)
+Val: (10352, 100, 7)
+Test: (10352, 100, 7)
+Labels: (10352,)
+Normal Windows: 9807
+Anomaly Windows: 545
+Model Device: cuda:0
+Parameters: 563,271
+Epoch 5/20 | Loss=0.001570 | Elapsed=36.1s
+Epoch 10/20 | Loss=0.000617 | Elapsed=71.8s
+Epoch 15/20 | Loss=0.000356 | Elapsed=107.7s
+Epoch 20/20 | Loss=0.000210 | Elapsed=143.6s
+Completed ETTm2
+Training Time: 143.56s
+Average F1: 0.71415545400206
+Average AUC: 1.0
+Average Training Time: 89.88520592451096 seconds
+Average Inference Time: 0.3379833698272705 seconds
+Model Parameters: 563271
