@@ -20,8 +20,6 @@ from torch.utils.data import (
     DataLoader
 )
 
-import gc
-
 device = torch.device(
     "cuda" if torch.cuda.is_available() else "cpu"
 )
@@ -153,26 +151,36 @@ for channel in channels:
         EPOCHS = 50
 
         train_start = time.time()
+        
+        model.train()
 
         for epoch in range(EPOCHS):
+            
             epoch_loss = 0
+            
             for (batch,) in train_loader:
+                
                 batch = batch.to(device)
+                
                 optimizer.zero_grad()
+                
                 output = model(batch)
 
                 loss = criterion(output, batch)
 
                 loss.backward()
+                
                 optimizer.step()
 
                 epoch_loss += loss.item()
 
-            if (epoch + 1) % 10 == 0:
+            if (epoch + 1) % 5 == 0:
+                elapsed = (time.time() - train_start)
                 print(
                     f"{channel_id}"
-                    f" | Epoch {epoch + 1}"
+                    f" | Epoch {epoch+1}/{EPOCHS}"
                     f" | Loss={epoch_loss/len(train_loader):.6f}"
+                    f" | Elapsed={elapsed:.1f}s"
                 )
         
 
@@ -187,8 +195,11 @@ for channel in channels:
         all_scores = []
 
         with torch.no_grad():
+            
             for (batch,) in test_loader:
+                
                 batch = batch.to(device)
+                
                 reconstruction = model(batch)
 
                 batch_scores = (
@@ -229,17 +240,29 @@ for channel in channels:
         
         print(f"Completed {channel_id}")
 
+        print(
+            f"Training Time: "
+            f"{training_time:.2f}s"
+        )
+
+        del model
+        del scores
+
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+
     except Exception as e:
         print(channel, e)
-
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
 results_df = pd.DataFrame(results)
 
 if results_df.empty:
-
     raise RuntimeError(
         "LSTM-AE produced no results."
     )
+    
 results_df = results_df[
     [
         "Channel",

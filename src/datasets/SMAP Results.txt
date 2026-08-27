@@ -8,6 +8,14 @@ Average AUC: 0.6217736089523292
 Average Training Time: 0.04965469277935264 seconds
 Average Inference Time: 0.14229091891536005 seconds
 Model Parameters: 32396
+Window 200
+Threshold 60
+Epoch 50
+Average F1: 0.30826220105537505
+Average AUC: 0.6178346229657677
+Average Training Time: 5.920117260497293 seconds
+Average Inference Time: 0.14068141395663036 seconds
+Model Parameters: 32396
 LADOP
 Window 100
 Threshold 60

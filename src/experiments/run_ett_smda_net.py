@@ -126,7 +126,6 @@ for dataset in datasets:
 
         train_start = time.time()
 
-
         model.train()
 
         for epoch in range(EPOCHS):

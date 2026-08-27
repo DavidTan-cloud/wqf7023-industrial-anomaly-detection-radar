@@ -167,6 +167,7 @@ for channel in channels:
             epoch_loss = 0
 
             for (batch,) in train_loader:
+                
                 batch = batch.to(device)
             
                 optimizer.zero_grad()
@@ -181,10 +182,12 @@ for channel in channels:
                 epoch_loss += loss.item()
 
                 if (epoch + 1) % 5 == 0:
+                    elapsed = (time.time() - train_start)
                     print(
                         f"{channel_id} | "
-                        f"Epoch {epoch+1} | "
-                        f"Loss={epoch_loss/len(train_loader):.6f}"
+                        f"Epoch {epoch+1}/{EPOCHS} | "
+                        f"Loss={epoch_loss/len(train_loader):.6f} | "
+                        f"Elapsed={elapsed:.1f}s"
                     )
 
         training_time = (
@@ -248,15 +251,22 @@ for channel in channels:
         
         print(f"Completed {channel_id}")
 
+        print(
+            f"Training Time: "
+            f"{training_time:.2f}s"
+        )
+
         del model
         del scores
 
-        torch.cuda.empty_cache()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
     except Exception as e:
         print(channel, e)
         
-        torch.cuda.empty_cache()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
 results_df = pd.DataFrame(results)
 
