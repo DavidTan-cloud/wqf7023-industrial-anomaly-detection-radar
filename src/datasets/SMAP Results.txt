@@ -1,17 +1,24 @@
 Fine Tuned
 LSTM-AE
+Window 100
+Threshold 60
+Epoch 10
 Average F1: 0.27716705047726437
 Average AUC: 0.6217736089523292
 Average Training Time: 0.04965469277935264 seconds
 Average Inference Time: 0.14229091891536005 seconds
 Model Parameters: 32396
 LADOP
+Window 100
+Threshold 60
 LADOP Average F1: 0.2778959702574321
 LADOP Average AUC: 0.622447861544972
 Average Training Time: 0.003997364161927023 seconds
 Average Inference Time: 0.0894556251572974 seconds
 Model Parameters: 0
 RANCoder
+Window 100
+Threshold 60
 Average F1: 0.27693410774042526
 Average AUC: 0.6221758853548179
 Average Training Time: 0.11903154702834141 seconds
@@ -20,36 +27,37 @@ Model Parameters: 1127724
 SISVAE
 Window 100
 Threshold 60
-Epoch 10
-Average F1: 0.2622094254972524
-Average AUC: 0.6171972644398807
-Average Training Time: 0.24051207966274685 seconds
-Average Inference Time: 0.05819381019215525 seconds
-Model Parameters: 47993
-Epoch 20
-Average F1: 0.26504745019810555
-Average AUC: 0.6201339339075399
-Average Training Time: 0.48380140905027036 seconds
-Average Inference Time: 0.0385716461840971 seconds
-Model Parameters: 47993
-Epoch 30
-Average F1: 0.2657941665238107
-Average AUC: 0.6228401357953971
-Average Training Time: 0.7459618750913644 seconds
-Average Inference Time: 0.03768609188221119 seconds
-Model Parameters: 47993
 Epoch 50
-Average F1: 0.2664227370642486
-Average AUC: 0.6234069107012414
-Average Training Time: 1.2338844699624143 seconds
-Average Inference Time: 0.04909244878792468 seconds
+Average F1: 0.2660012996607275
+Average AUC: 0.6234770893759353
+Average Training Time: 1.2462445070714125 seconds
+Average Inference Time: 0.047543584564585746 seconds
 Model Parameters: 47993
-Epoch 100
-Average F1: 0.2659166139746771
-Average AUC: 0.6221916166797842
-Average Training Time: 2.4979178728880704 seconds
-Average Inference Time: 0.04675655011777525 seconds
-Model Parameters: 47993
+SMDA-Net
+Window 100
+Threshold 60
+Epoch 10
+Batch_size 64
+d_model 32
+nhead 2
+num_layers 1
+Average F1: 0.2874428264628695
+Average AUC: 0.6392504752255929
+Average Training Time: 1.9048795494032496 seconds
+Average Inference Time: 0.19076048886334454 seconds
+Model Parameters: 139161
+Window 100
+Threshold 60
+Epoch 10
+Batch_size 64
+d_model 64
+nhead 4
+num_layers 2
+Average F1: 0.2795516855116532
+Average AUC: 0.6389598737632577
+Average Training Time: 3.9341496302757735 seconds
+Average Inference Time: 0.3546213044060601 seconds
+Model Parameters: 565593
 
 50
 Average F1: 0.1307754442830157
@@ -160,3 +168,38 @@ Average AUC: 0.6099544700741629
 Average Training Time: 0.24607634838716483 seconds
 Average Inference Time: 0.6927629223576298 seconds
 Model Parameters: 32396
+
+SISVAE
+Window 100
+Threshold 60
+Epoch 10
+Average F1: 0.2622094254972524
+Average AUC: 0.6171972644398807
+Average Training Time: 0.24051207966274685 seconds
+Average Inference Time: 0.05819381019215525 seconds
+Model Parameters: 47993
+Epoch 20
+Average F1: 0.26504745019810555
+Average AUC: 0.6201339339075399
+Average Training Time: 0.48380140905027036 seconds
+Average Inference Time: 0.0385716461840971 seconds
+Model Parameters: 47993
+Epoch 30
+Average F1: 0.2657941665238107
+Average AUC: 0.6228401357953971
+Average Training Time: 0.7459618750913644 seconds
+Average Inference Time: 0.03768609188221119 seconds
+Model Parameters: 47993
+Epoch 50
+Average F1: 0.2664227370642486
+Average AUC: 0.6234069107012414
+Average Training Time: 1.2338844699624143 seconds
+Average Inference Time: 0.04909244878792468 seconds
+Model Parameters: 47993
+Epoch 100
+Average F1: 0.2659166139746771
+Average AUC: 0.6221916166797842
+Average Training Time: 2.4979178728880704 seconds
+Average Inference Time: 0.04675655011777525 seconds
+Model Parameters: 47993
+
