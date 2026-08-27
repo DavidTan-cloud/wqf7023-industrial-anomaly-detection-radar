@@ -181,14 +181,14 @@ for channel in channels:
 
                 epoch_loss += loss.item()
 
-                if (epoch + 1) % 5 == 0:
-                    elapsed = (time.time() - train_start)
-                    print(
-                        f"{channel_id} | "
-                        f"Epoch {epoch+1}/{EPOCHS} | "
-                        f"Loss={epoch_loss/len(train_loader):.6f} | "
-                        f"Elapsed={elapsed:.1f}s"
-                    )
+            if (epoch + 1) % 5 == 0:
+                elapsed = (time.time() - train_start)
+                print(
+                    f"{channel_id} | "
+                    f"Epoch {epoch+1}/{EPOCHS} | "
+                    f"Loss={epoch_loss/len(train_loader):.6f} | "
+                    f"Elapsed={elapsed:.1f}s"
+                )
 
         training_time = (
             time.time() - train_start
