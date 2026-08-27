@@ -139,7 +139,7 @@ for channel in channels:
             lr=0.001
         )
 
-        EPOCHS = 100
+        EPOCHS = 50
 
         train_start = time.time()
 
