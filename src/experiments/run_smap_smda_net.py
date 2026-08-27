@@ -150,7 +150,7 @@ for channel in channels:
         )
 
         
-        EPOCHS = 10
+        EPOCHS = 30
 
         train_start = time.time()
         
