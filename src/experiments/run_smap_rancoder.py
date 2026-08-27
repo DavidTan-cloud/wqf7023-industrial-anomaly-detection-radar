@@ -15,11 +15,6 @@ import pandas as pd
 import numpy as np
 import torch
 
-from torch.utils.data import (
-    TensorDataset,
-    DataLoader
-)
-
 device = torch.device(
     "cuda" if torch.cuda.is_available() else "cpu"
 )
@@ -122,25 +117,13 @@ for channel in channels:
             -1
         )
         
-        train_dataset = TensorDataset(
-            torch.FloatTensor(X_train_flat)
-        )
+        X_train_t = torch.FloatTensor(
+            X_train_flat
+        ).to(device)
 
-        train_loader = DataLoader(
-            train_dataset,
-            batch_size=64,
-            shuffle=True
-        )
-
-        test_dataset = TensorDataset(
-            torch.FloatTensor(X_test_flat)
-        )
-
-        test_loader = DataLoader(
-            test_dataset,
-            batch_size=64,
-            shuffle=False
-        )
+        X_test_t = torch.FloatTensor(
+            X_test_flat
+        ).to(device)
         
         model = RANCoder(
             input_dim=X_train_flat.shape[1],
