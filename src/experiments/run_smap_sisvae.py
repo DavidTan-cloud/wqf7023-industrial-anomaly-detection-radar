@@ -16,6 +16,11 @@ import numpy as np
 import torch
 import torch.nn as nn
 
+from torch.utils.data import (
+    TensorDataset,
+    DataLoader
+)
+
 device = torch.device(
     "cuda" if torch.cuda.is_available() else "cpu"
 )
@@ -49,7 +54,7 @@ channels = loader.get_channels()
 
 results = []
 
-WINDOW_SIZE = 100
+WINDOW_SIZE = 200
 
 for channel in channels:
 
@@ -108,13 +113,25 @@ for channel in channels:
             WINDOW_SIZE
         )
 
-        X_train_t = torch.FloatTensor(
-            X_train
-        ).to(device)
+        train_dataset = TensorDataset(
+            torch.FloatTensor(X_train)
+        )
 
-        X_test_t = torch.FloatTensor(
-            X_test
-        ).to(device)
+        train_loader = DataLoader(
+            train_dataset,
+            batch_size=64,
+            shuffle=True
+        )
+
+        test_dataset = TensorDataset(
+            torch.FloatTensor(X_test)
+        )
+
+        test_loader = DataLoader(
+            test_dataset,
+            batch_size=64,
+            shuffle=False
+        )
 
         model = SISVAE(
             input_dim=X_train.shape[-1],
@@ -143,44 +160,71 @@ for channel in channels:
 
         train_start = time.time()
 
+        model.train()
+
         for epoch in range(EPOCHS):
+
+            epoch_loss = 0
+
+            for (batch,) in train_loader:
+                batch = batch.to(device)
             
-            optimizer.zero_grad()
+                optimizer.zero_grad()
 
-            recon, mu, logvar = model(X_train_t)
+                recon, mu, logvar = model(batch)
 
-            loss = vae_loss(recon, X_train_t, mu, logvar)
+                loss = vae_loss(recon, batch, mu, logvar)
 
-            loss.backward()
-            optimizer.step()
+                loss.backward()
+                optimizer.step()
 
-            if (epoch + 1) % 5 == 0:
-                print(
-                    f"{channel_id} | "
-                    f"Epoch {epoch+1} | "
-                    f"Loss={loss.item():.6f}"
-                )
+                epoch_loss += loss.item()
+
+                if (epoch + 1) % 5 == 0:
+                    print(
+                        f"{channel_id} | "
+                        f"Epoch {epoch+1} | "
+                        f"Loss={epoch_loss/len(train_loader):.6f}"
+                    )
 
         training_time = (
             time.time() - train_start
         )
 
         inference_start = time.time()
+
+        model.eval()
+        
+        all_scores = []
  
         with torch.no_grad():
 
-            recon, mu, logvar = model(X_test_t)
+            for (batch,) in test_loader:
 
-            recon_error = (
-                (X_test_t - recon) ** 2
-            ).mean(dim=(1,2))
+                batch = batch.to(device)
 
-            kl_div = -0.5 * torch.sum(
-                1 + logvar - mu.pow(2) - logvar.exp(),
-                dim=1
-            )
+                recon, mu, logvar = model(batch)
 
-            scores = (recon_error + kl_div).detach().cpu().numpy()
+                recon_error = (
+                    (batch - recon) ** 2
+                ).mean(dim=(1,2))
+
+                kl_div = -0.5 * torch.sum(
+                    1 + logvar - mu.pow(2) - logvar.exp(),
+                    dim=1
+                )
+
+                batch_scores = (
+                    recon_error + kl_div
+                ).detach().cpu().numpy()
+
+                all_scores.append(
+                    batch_scores
+                )
+
+        scores = np.concatenate(
+            all_scores
+        )
 
         inference_time = (
             time.time() - inference_start
@@ -204,9 +248,15 @@ for channel in channels:
         
         print(f"Completed {channel_id}")
 
+        del model
+        del scores
+
+        torch.cuda.empty_cache()
+
     except Exception as e:
         print(channel, e)
-
+        
+        torch.cuda.empty_cache()
 
 results_df = pd.DataFrame(results)
 
