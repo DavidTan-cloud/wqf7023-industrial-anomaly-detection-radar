@@ -162,7 +162,7 @@ for channel in channels:
             time.time() - inference_start
         )
 
-        threshold = percentile_threshold(scores, percentile=70)
+        threshold = percentile_threshold(scores, percentile=65)
         preds = (scores > threshold).astype(int)
         metrics = evaluate(y_test, preds, scores)
 

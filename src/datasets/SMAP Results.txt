@@ -62,3 +62,9 @@ Average AUC: 0.6197509947630125
 Average Training Time: 0.04240017172730999 seconds
 Average Inference Time: 0.14890525664812254 seconds
 Model Parameters: 32396
+65
+Average F1: 0.274730391744915
+Average AUC: 0.6189903906273987
+Average Training Time: 0.0412159142670808 seconds
+Average Inference Time: 0.1478293059784689 seconds
+Model Parameters: 32396
